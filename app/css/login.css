@@ -1,0 +1,78 @@
+#loginContainer {
+    width: 75vw;
+    background-image: url('../assets/signup2.jpeg');
+    height: 97vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#login-content {
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    
+}
+
+#signup-header {
+    text-align: center;
+}
+
+#signup-body {
+    padding: 10px;
+}
+
+#signup-footer {
+    justify-content: center;
+}
+
+#signup-form {
+    max-height: 68vh;
+    min-height: fit-content;
+    width: 400px;
+    background-color: rgb(0, 204, 102, .8);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.invalid {
+    border: 2px solid red !important;
+}
+
+.inputBlock {
+    margin: 25px 0;
+}
+
+.invalidButton {
+    background-color: grey !important;
+    cursor: default !important;
+}
+
+.input-p {
+    font-size: 1.5em;
+    flex: 0 1 50%;
+}
+
+.login-input {
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 600px) { 
+    #loginContainer {
+        width: 100vw;
+        background-image: url('../assets/signup2.jpeg');
+        height: 97vh;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    #signup-form {
+        max-height: 70vh;
+        min-height: fit-content;
+        width: 100vw;
+        background-color: transparent;
+    }
+
+}

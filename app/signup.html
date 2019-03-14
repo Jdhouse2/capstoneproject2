@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rent-A-Item</title>
+        <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+        <link rel='stylesheet' href='./css/login.css' type='text/css'>
+        <link rel='stylesheet' href='./css/main.css' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src='./js/login.js'></script>
+        <script src='./js/main.js'></script>
+    </head>
+    <body>
+        <div id='nav'></div>
+        <div id='body'>
+            <div id='loginContainer'>
+                    <div class='fade'>
+                        <div class='flex flex-column' id='login-content'>
+                            <form class='flex flex-column' id='signup-form'>
+                                <div id='signup-header'>
+                                    <h1>Sign Up</h1>
+                                </div>
+                                <div id='signup-body'>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            Email
+                                        </p>
+                                        <input type='email' placeholder='Email' class='login-input emailInput inputToValidate'/>
+                                    </div>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            Verify Email
+                                        </p>
+                                        <input type='email' placeholder='Verify Email' class='login-input emailInput inputToValidate' id='emailValue'/>
+                                    </div>
+                                    <div class='inputBlock flex flex-row'>
+                                            <p class='input-p'>
+                                                Username
+                                            </p>
+                                            <input type='email' placeholder='Username' class='login-input' id='usernameValue' />
+                                        </div>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            First Name
+                                        </p>
+                                        <input type='text' placeholder='First Name' class='login-input' id='firstnameValue'/>
+                                    </div>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            Last Name
+                                        </p>
+                                        <input type='text' placeholder='Last Name' class='login-input' id='lastnameValue'/>
+                                    </div>
+                                    <div class='inputBlock flex flex-row'>
+                                            <p class='input-p'>
+                                                Zipcode
+                                            </p>
+                                            <input type='text' placeholder='Zipcode' class='login-input' id='zipValue'/>
+                                        </div>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            Create Password
+                                        </p>
+                                        <input type='password' placeholder='' class='login-input passwordInput inputToValidate'/>
+                                    </div>
+                                    <div class='inputBlock flex flex-row'>
+                                        <p class='input-p'>
+                                            Verify Password
+                                        </p>
+                                        <input type='password' placeholder='' class='login-input passwordInput inputToValidate' id='passwordValue'/>
+                                    </div>
+                                </div>
+                                <div id='signup-footer' class='flex flex-row flex-center'>
+                                    <div class='button flex flex-row flex-center' id='submitButton'>
+                                        <p>Sign Up</p>  
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function generateUserObj(){
+                let email = document.getElementById('emailValue').value
+                let username = document.getElementById('usernameValue').value
+                let password = document.getElementById('passwordValue').value
+                let fName = document.getElementById('firstnameValue').value
+                let lName = document.getElementById('lastnameValue').value
+                let zip = document.getElementById('zipValue').value
+
+                return {
+                    email,
+                    username,
+                    password,
+                    fName,
+                    lName,
+                    zip
+                }
+
+            }
+
+            function createUser(userObj){  
+                if (loginState.buttonIsActive){
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/create-user',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: userObj,
+                        success: function (msg) {
+                            window.location.href = "/app/home.html";
+                        },
+                        error: function (e) {
+                            console.log('failure')
+                            console.log(e)
+                        }
+                    })
+                }
+            }
+
+            document.getElementById('submitButton').addEventListener('click', (e) => {
+                createUser(generateUserObj())
+            })
+            init()
+            initLogin()
+            
+
+
+            
+
+
+        </script>
+    </body>
+</html>

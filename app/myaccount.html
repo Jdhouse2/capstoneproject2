@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rent-A-Item</title>
+        <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+        <link rel='stylesheet' href='./css/login.css' type='text/css'>
+        <link rel='stylesheet' href='./css/main.css' type='text/css'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        <script src='./js/login.js'></script>
+        <script src='./js/main.js'></script>
+    </head>
+    <body>
+        <div id='nav'>
+        </div>
+        <div id='pageHeading'>
+            <p>Account Information</p>
+        </div>
+        <div id='accountInfo'>
+            <p class="label">Name: </p><p id='name'></p>
+            <p class="label">Username: </p><p id='username'></p>
+            <p class="label">Email: </p><p id="email"></p>
+            <p class="label">Zip Code: </p><p id="zip"></p>
+        </div>
+
+        <table class="itemTable" id="listedItemsTable">
+            <tr>
+                <th></th>
+                <th>Listed Items</th>
+            </tr>
+            <tr>
+                <th>Item Name</th>
+                <th>Price</th>
+                <th>Checked Out</th>
+            </tr> 
+        </table>
+
+        <table class="itemTable" id="checkedOutItemsTable">
+            <tr>
+                <th></th>
+                <th>Items Checked Out</th>
+            </tr>
+            <tr>
+                <th>Item Name</th>
+                <th>Price</th>
+                <th>Check In</th>
+            </tr>
+        </table>
+
+        <script>
+
+            function getItems() {
+                $.ajax({
+                    type: "GET",
+                    url: '/api/get-items',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (msg) {
+                        console.log(msg);
+                        var table = document.getElementById("listedItemsTable");
+                        var checkedOutTable = document.getElementById("checkedOutItemsTable");
+                        for (i = 0; i < msg.length; i++) {
+                            // If Item is owned by user
+                            var thisOwner = msg[i].owner_id;
+                            if (thisOwner == localStorage.getItem('ownerid')) {
+                                var itemName = msg[i].item_name;
+                                var price = msg[i].day_price;
+                                var available = msg[i].available;
+
+                                var row = table.insertRow(2);
+                                var nameCell = row.insertCell(0);
+                                var priceCell = row.insertCell(1);
+                                var availableCell = row.insertCell(2);
+
+
+                                // Fill Cells
+                                nameCell.innerHTML = itemName;
+                                priceCell.innerHTML = price;
+                                if (available == 1) {
+                                    availableCell.innerHTML = "No";
+                                } else {
+                                    availableCell.innerHTML = "Yes";
+                                }
+                            }
+                            // If item is checked out by user
+                            var thisRent = msg[i].renter_id;
+                            if (thisRent == localStorage.getItem('ownerid')) {
+                                var itemid = msg[i].item_id;
+                                var renterid = msg[i].renter_id;
+                                var itemName = msg[i].item_name;
+                                var price = msg[i].day_price;
+
+                                // Create Check In Button
+                                var checkInButton = document.createElement("button");
+                                checkInButton.innerHTML = "Check In";
+
+                                var row = checkedOutTable.insertRow(2);
+                                var nameCell = row.insertCell(0);
+                                var priceCell = row.insertCell(1);
+                                var checkInCell = row.insertCell(2);
+
+                                // Fill Cells
+                                nameCell.innerHTML = itemName;
+                                priceCell.innerHTML = price;
+                                if (available == 1) {
+                                    availableCell.innerHTML = "No";
+                                } else {
+                                    availableCell.innerHTML = "Yes";
+                                }
+
+                                checkInCell.appendChild(checkInButton);
+                                checkInCell.addEventListener("click", function () {
+                                    checkInItem(createRentObj(renterid, itemid));
+                                });
+                            }
+                        }
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+                });
+            }
+
+            function createRentObj(rentid, itemid) {
+                console.log("renter id is " + rentid + " item id is " + itemid);
+                return {
+                    rentid,
+                    itemid,
+                }
+            }
+
+            function checkInItem(rentObj) {
+                console.log("Checking item in...");
+                $.ajax({
+                    type: "GET",
+                    url: '/api/updaterent',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: rentObj,
+                    success: function (msg) {
+                        console.log("Successful Update");
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+
+                });
+            }
+
+            function getAccountInfo() {
+                $.ajax({
+                    type: "GET",
+                    url: '/api/getuserinfo',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (msg) {
+                      
+                        console.log(msg);
+                        var i;
+                        for (i = 0; i < msg.length; i++) {
+                            var thisId = msg[i].id;
+                            console.log(thisId);
+                            if (thisId == localStorage.getItem('ownerid')) {
+                                console.log("same id");
+                                var firstName = msg[i].firstname;
+                                var lastName = msg[i].lastname;
+                                var userName = msg[i].username;
+                                var emailName = msg[i].email;
+                                var zipCode = msg[i].zipcode;
+                                document.getElementById('name').innerHTML = firstName + " " + lastName;
+                                document.getElementById('username').innerHTML = userName;
+                                document.getElementById('email').innerHTML = emailName;
+                                document.getElementById('zip').innerHTML = zipCode;
+                            }
+                        }
+                    }
+                })
+            }
+
+            init();
+            getAccountInfo();
+            getItems();
+
+
+
+        </script>
+    </body>
+
+
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Rent-A-Item</title>
+    <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+    <link rel='stylesheet' href='./css/login.css' type='text/css'>
+    <link rel='stylesheet' href='./css/main.css' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <script src='./js/login.js'></script>
+    <script src='./js/main.js'></script>
+
+    <style type="text/css">
+      #login-body {padding: 10% 40%;}
+    </style>
+
+  </head>
+
+  <body>
+    <div id='nav'></div>
+    <div id='login-body'>
+
+        <h1>Rent-A-Item</h1>
+        <div class="container">
+          <label for="uname"><b>Username: </b></label>
+          <input type="text" placeholder="Enter Username" name="username" id='usernameValue'><br><br>
+
+          <label for="psw"><b>Password: </b></label>
+          <input type="password" placeholder="Enter Password" name="password" id='passwordValue'><br><br>
+
+          <button type="submit"onClick="validateUser(this.Form)" id="loginButton">Login</button><br><br>
+        </div>
+      </div>
+      
+
+    <script>
+          function makeUserObj(){
+                let username = document.getElementById('usernameValue').value
+                let password = document.getElementById('passwordValue').value
+
+              
+                return {
+                    username,
+                    password,
+                }
+
+            }
+          function validateUser(userObj) {
+            
+                $.ajax({
+                    type: "GET",
+                    url: '/api/verify-user',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: userObj,
+                    success: function (msg) {
+                    
+                        localStorage.setItem("ownerid", msg[0].id);
+                        window.location.href = "/app/feed.html";
+
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+                })
+              
+            }
+            document.getElementById('loginButton').addEventListener('click', (e) => {
+                validateUser(makeUserObj())
+            })
+        init()
+        initLogin()
+    </script>
+  </body>
+</html>

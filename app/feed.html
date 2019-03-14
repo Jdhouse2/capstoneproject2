@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+            <meta charset='UTF-8'>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Rent-A-Item</title>
+            <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+            <link rel='stylesheet' href='./css/main.css' type='text/css'>
+            <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <script src='./js/feed.js'></script>
+            <script src='./js/main.js'></script>
+    </head>
+    <body>
+        <div id='nav'>
+
+        </div>
+        <div id='pageHeading'>
+            <p>Items for Rent</p>
+        </div>
+        <div class='feedContainer flex flex-row'>
+            <div class='leftNavbar'>
+                <input type="text" id="search" placeholder="Search">
+                <select id='category'>
+                    <option value="category">Category Filter</option>
+                    <option value="toys">Toys</option>
+                    <option value="Cooking">Cooking</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Home Improvement">Home Improvement</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Gardening">Gardening</option>
+                </select>
+                <input type='number' id='zipCode' placeholder='Zip Code'/>
+
+            </div>
+            <div class='listContainer'>
+                <div id='noItems' class='hidden'>
+                    Woops! There are no items :(
+                </div>
+            </div>
+
+        </div>
+        <script>
+            let feedState = {
+                items: [],
+                itemsObject: {},
+                activeId: null,
+            }
+
+            function getItems() {
+                $.ajax({
+                    type: "GET",
+                    url: '/api/get-items',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (msg) {
+                        feedState.items = msg;
+
+                        feedState.items.forEach((item) => {
+                            feedState.itemsObject[item.item_id] = {
+                                name: item.item_name,
+                                category: item.item_category,
+                                zip: item.item_zipcode,
+                                desc: item.item_description,
+                                price: item.day_price,
+                                available: item.available,
+                            }
+                        });
+
+                        console.log(feedState)
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+                }).done((msg) => {
+                    msg.forEach((item) => {
+                        console.log(feedState)
+                        addToUi(item)
+                    })
+                })
+            }
+            function makeItemObj() {
+                let item_id = document.getElementById('item_id').value
+                let renter_id = localStorage.getItem('ownerid')
+
+                return {
+                    item_id,
+                    renter_id,
+                }
+
+            }
+
+            function checkout(itemObj) {
+                $.ajax({
+                    type: "GET",
+                    url: '/api/checkout-item',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: itemObj,
+                    success: function (msg) {
+                        window.location.href = "/app/feed.html";
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+                })
+            }
+            function determineHref(category) {
+                switch (category) {
+                    case 'toys':
+                        return './assets/puzzle.png'
+                    case 'Toys':
+                        return './assets/puzzle.png'
+                    case 'Cooking':
+                        return './assets/chef.png'
+                    case 'Electronics':
+                        return './assets/pc.png'
+                    case 'Home Improvement':
+                        return './assets/hammer.png'
+                    case 'Gardening':
+                        return './assets/shovel.png'
+                    case 'Sports':
+                        return './assets/football.png'
+                }
+            }
+
+            function rotate(id) {
+                let targetToRotate = document.getElementById(`${id}`)
+                let targetInnerDetails = document.getElementById(`${id}InnerDetails`)
+                console.log(id)
+                console.log(targetToRotate)
+                let chevron = document.getElementById(`${id}Chevron`)
+
+                if (targetToRotate.classList.contains('active')) {
+                    targetToRotate.classList.remove('active')
+                    chevron.classList.remove('rotate')
+                    targetInnerDetails.classList.add('hidden')
+                } else {
+                    targetToRotate.classList.add('active')
+                    chevron.classList.add('rotate')
+                    targetInnerDetails.classList.remove('hidden')
+                }
+            }
+
+            function addToUi(itemObj) {
+                let listContainer = document.querySelector('.listContainer')
+                let itemContainer = generateFlexbox()
+                itemContainer.classList.add('item-container')
+                itemContainer.id = itemObj.item_id
+                let imgHref = determineHref(itemObj.item_category)
+                let img = document.createElement('img')
+                img.src = imgHref
+                img.id = `${itemObj.item_id}Picture`
+                img.classList.add('item-img-icon')
+
+
+                let picture = generateDiv('', ['item-img'])
+                picture.appendChild(img)
+
+                let details = document.createElement('div')
+                details.classList.add('flex')
+                details.classList.add('flex-column')
+                details.classList.add('item-details')
+
+                let header = generateFlexbox()
+                header.innerHTML = itemObj.item_name
+                header.classList.add('item-header')
+
+                let innerDetails = generateFlexbox()
+                innerDetails.classList.add('item-inner-details')
+                innerDetails.id = `${itemObj.item_id}InnerDetails`
+
+                innerDetails.classList.add('hidden')
+
+                let price = generateFlexbox()
+                price.classList.add('item-price')
+                price.classList.add('item-detail-cell')
+                price.innerHTML = `Price Per Day: $${itemObj.day_price}`
+
+                let zip = generateFlexbox()
+                zip.classList.add('item-zip')
+                zip.classList.add('item-detail-cell')
+                zip.innerHTML = `Zipcode: ${itemObj.item_zipcode}`
+
+                let description = generateFlexbox()
+                description.classList.add('item-desc')
+                description.innerHTML = `${itemObj.item_description}`
+                description.classList.add('item-detail-cell')
+
+                details.appendChild(header)
+
+                innerDetails.appendChild(price)
+                innerDetails.appendChild(zip)
+                innerDetails.appendChild(description)
+                
+
+                details.appendChild(innerDetails)
+
+                let checkoutButton = document.createElement('div');
+                checkoutButton.classList.add('item-button')
+                checkoutButton.innerHTML = '<u><b>Checkout'
+                checkoutButton.id = `${itemObj.item_id}CheckoutButton`
+                console.log(checkoutButton.id)
+                checkoutButton.classList.add('item-detail-cell')
+
+                innerDetails.appendChild(checkoutButton)
+
+                let dropdownIcon = document.createElement('div');
+                dropdownIcon.classList.add('dropdown-icon')
+                dropdownIcon.id = `${itemObj.item_id}Chevron`
+
+                itemContainer.appendChild(picture)
+                itemContainer.appendChild(details)
+                itemContainer.appendChild(dropdownIcon)
+                listContainer.appendChild(itemContainer)
+
+                dropdownIcon.addEventListener('click', (e) => {
+                    let targetId = e.target.id.split('C', 1)[0]
+
+                    if (feedState.activeId === targetId) {
+                        rotate(targetId)
+                        feedState.activeId = null
+                    } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
+                        rotate(feedState.activeId)
+                        rotate(targetId)
+                        feedState.activeId = targetId
+                    } else if (feedState.activeId === null) {
+                        rotate(targetId)
+                        feedState.activeId = targetId
+                    }
+                })
+
+                img.addEventListener('click', (e) => {
+                    let targetId = e.target.id.split('P', 1)[0]
+
+                    if (feedState.activeId === targetId) {
+                        rotate(targetId)
+                        feedState.activeId = null
+                    } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
+                        rotate(feedState.activeId)
+                        rotate(targetId)
+                        feedState.activeId = targetId
+                    } else if (feedState.activeId === null) {
+                        rotate(targetId)
+                        feedState.activeId = targetId
+                    }
+                })
+
+            }
+
+            function attachSearchfilter(){
+                document.getElementById('search').addEventListener('keyup', (e) => {
+                    let item = e.target.value
+                    let showingSomethingFlag = false
+
+                    feedState.items.forEach((specificItem) => {
+                        let row = document.getElementById(`${specificItem.item_id}`)
+                        let itemName = `${specificItem.item_name}`
+
+                        if (!itemName.includes(item)) {
+                            if (!row.classList.contains('sHidden')) {
+                                row.classList.add('sHidden')
+                            }
+                        } else {
+                            showingSomethingFlag = true
+                            if (row.classList.contains('sHidden')) {
+                                row.classList.remove('sHidden')
+                            }
+                        }
+                    })
+
+                    if(!showingSomethingFlag){
+                        if(document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.remove('hidden')
+                        }
+                    } else {
+                        if(!document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.add('hidden')
+                        }
+                    }
+                })
+            }
+
+            function attachZipFilterEvent(){
+                document.getElementById('zipCode').addEventListener('keyup', (e) => {
+                    let zip = e.target.value
+                    let showingSomethingFlag = false
+
+                    feedState.items.forEach((item) => {
+                        let row = document.getElementById(`${item.item_id}`)
+                        let zipcode = `${item.item_zipcode}`
+
+                        checkoutButton.addEventListener('click', (e) => {
+                            checkout(makeItemObj())
+                        })
+                        if (!zipcode.includes(zip)) {
+                            if (!row.classList.contains('zHidden')) {
+                                row.classList.add('zHidden')
+                            }
+                        } else {
+                            showingSomethingFlag = true
+                            if (row.classList.contains('zHidden')) {
+                                row.classList.remove('zHidden')
+                            }
+                        }
+                    })
+
+                    if(!showingSomethingFlag){
+                        if(document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.remove('hidden')
+                        }
+                    } else {
+                        if(!document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.add('hidden')
+                        }
+                    }
+                })
+            }
+
+            function attachCategoryFilterEvent(){
+
+                document.getElementById('category').addEventListener('change', (e) => {
+                    let category = e.target.value
+                    let showingSomethingFlag = false
+                    
+                    feedState.items.forEach((item) => {
+                        let row = document.getElementById(`${item.item_id}`)
+                        let rowCategory = item.item_category
+
+                        if (category !== rowCategory && category !== 'category') {
+                            if (!row.classList.contains('ctgHidden')) {
+                                row.classList.add('ctgHidden')
+                            }
+                        } else if(category === rowCategory || category === 'category') {
+                            showingSomethingFlag = true
+                            if (row.classList.contains('ctgHidden')) {
+                                row.classList.remove('ctgHidden')
+                            }
+                        } 
+                    })
+
+                    if(!showingSomethingFlag){
+                        if(document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.remove('hidden')
+                        }
+                    } else {
+                        if(!document.getElementById('noItems').classList.contains('hidden')){
+                            document.getElementById('noItems').classList.add('hidden')
+                        }
+                    }
+                })
+            }
+
+            function initFeed() {
+                getItems()
+                attachZipFilterEvent()
+                attachCategoryFilterEvent()
+                attachSearchfilter()
+            }
+
+            init()
+            initFeed()
+        </script>
+    </body>
+</html>

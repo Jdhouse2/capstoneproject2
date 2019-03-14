@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rent-A-Item</title>
+        <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+        <link rel='stylesheet' href='./css/main.css' type='text/css'>
+        <link rel='stylesheet' href='./css/home.css' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        <script src='./js/login_utils.js'></script> 
+        <script src='./js/main.js'></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id='nav'></div>
+        <div id='body'>
+            <div class='flex flex-column'>
+                <div class='flex flex-column inputs'>
+                    <div class='flex flex-row'>
+                            <input id='username' type='text' placeholder='User Name' value='TestUser' />
+                        </div>
+                        <div class='flex flex-column'>
+                            <input id='pass' type='text' placeholder='Password' value='' />
+                            <p>--This is not currently encrypted or hidden at all--</p>
+                        </div>
+                        <div class='flex flex-row'>
+                            <input id='fn' type='text' placeholder='First Name' value='Joe' />
+                        </div>
+                        <div class='flex flex-row'>
+                            <input id='ln' type='text' placeholder='Last Name' value='Schmoe' />
+                        </div>
+                        <div class='flex flex-row'>
+                            <input id='email' type='text' placeholder='Email' value='FooBar@rndm.org' />
+                        </div>
+                        <div class='flex flex-row'>
+                                <input id='zip' type='text' placeholder='Zip' value='00000' />
+                        </div>
+                        <div class='flex flex-row'>
+                            <button id='submit'>Submit</button>
+                            <button id='clear'>Clear</button>
+                        </div>
+                        
+                    </div>
+                    <div id='view' class='flex flex-column'>
+
+                        </div>
+            </div>
+            
+        </div>
+        <script>
+           
+            
+           function attachEventHandlers(){
+               document.querySelector('#submit').addEventListener('click', (_) => {
+                   let userObj = {}
+                        userObj.username = document.getElementById('username').value
+                        userObj.pass = document.getElementById('pass').value
+                        userObj.fn = document.getElementById('fn').value
+                        userObj.ln = document.getElementById('ln').value
+                        userObj.email = document.getElementById('email').value
+                        userObj.zip = document.getElementById('zip').value
+                        userObj.id = Math.floor((Math.random() * 100) + 1 + (Math.random() * 1000) *.987)
+                        userObj.active = 1
+                        userObj.admin = 0
+                    
+
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/write-user',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: userObj,
+                            success: function (msg) {
+                                console.log('success')
+                                console.log(msg)
+                                updateView()
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+               })
+
+               document.querySelector('#clear').addEventListener('click', (_) => {
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/clear',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (msg) {
+                                console.log('success')
+                                console.log(msg)
+                                updateView()
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+               })
+           }
+
+           function updateView(){
+                    $.ajax({
+                            type: "GET",
+                            url: '/app/test-pull',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (msg) {
+                                let view = document.getElementById('view')
+                                    view.innerHTML = ''
+
+                                msg.forEach((u) => {
+                                    let outerCounter = document.createElement('div')
+                                        outerCounter.classList.add('flex')
+                                        outerCounter.classList.add('flex-row')
+                                    
+                                    let firstName = document.createElement('div')
+                                        firstName.classList.add('firstName')
+                                        firstName.innerHTML = u.firstname
+
+                                    let lastname = document.createElement('div')
+                                        lastname.classList.add('lastname')
+                                        lastname.innerHTML = u.lastname
+
+                                        outerCounter.appendChild(firstName)
+                                        outerCounter.appendChild(lastname)
+                                        view.appendChild(outerCounter)
+                                })
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+           }
+
+            attachEventHandlers()
+           updateView()
+           init()
+        </script>
+    </body>
+</html>

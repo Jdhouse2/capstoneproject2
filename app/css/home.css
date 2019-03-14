@@ -1,0 +1,37 @@
+#homeContainer {
+    width: 75vw;
+    background-image: url('../assets/home-img-1.jpg');
+    height: 97vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#home-right-column {
+    background-color: rgba(0, 204, 102, .7);
+    width: 15vw;
+}
+
+#home-content {
+    align-items: stretch;
+    height: 100%;
+}
+
+#home-column {
+    justify-content: center;
+    
+}
+
+#home-heading {
+    border-bottom: 1px solid white;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+#home-subtitle {
+    text-align: left;
+    margin-left: 15%;
+}
+
+#home-content {
+    
+}

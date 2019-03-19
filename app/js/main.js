@@ -27,6 +27,9 @@ function checkAuth() {
         document.querySelectorAll("a[href='logout.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='AddAnItem.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='myaccount.html']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=Finance']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=Marketing']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=IT']")[0].style.display = "none";
 
         // No not display log out or add items buttons
     } else {

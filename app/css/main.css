@@ -112,7 +112,7 @@
     flex: 1 0 100%;
     align-items: center;
 
-    height: 5vw;
+    height: 7vw;
     transition: height 1.2s;
 }
 
@@ -166,7 +166,7 @@
 }
 
 .item-header {
-    font-size: 2rem;
+    font-size: 1rem;
     padding: 10px;
 }
 

@@ -102,7 +102,7 @@ app.get('/api/create-user', function(req, res) {
 
 app.get('/api/get-items', function(req, res) {
 
-    con.query('select * from item', function (err, result, fields) {
+    con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;
         res.send(result)
       });

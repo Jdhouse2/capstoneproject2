@@ -58,7 +58,7 @@
 
             function renderUICategory(dept) {
                 feedState.items.forEach((item) => {
-                    if(item.item_category === dept){
+                    if(item.postCategory === dept){
                         addToUi(item)
                     }
                 })
@@ -92,8 +92,9 @@
                         console.log(e)
                     }
                 }).done((msg) => {
+                    console.log(feedState)
                     msg.forEach((item) => {
-                        console.log(feedState)
+                        
                         
                         const urlParams = new URLSearchParams(window.location.search);
                         if(urlParams.get('tag')) {
@@ -178,15 +179,15 @@
                 let itemContainer = generateFlexbox()
                 itemContainer.classList.add('item-container')
                 itemContainer.id = itemObj.item_id
-                let imgHref = determineHref(itemObj.item_category)
-                let img = document.createElement('img')
-                img.src = imgHref
-                img.id = `${itemObj.item_id}Picture`
-                img.classList.add('item-img-icon')
+                // let imgHref = determineHref(itemObj.item_category)
+                // let img = document.createElement('img')
+                // img.src = imgHref
+                // img.id = `${itemObj.item_id}Picture`
+                // img.classList.add('item-img-icon')
 
 
-                let picture = generateDiv('', ['item-img'])
-                picture.appendChild(img)
+                // let picture = generateDiv('', ['item-img'])
+                // picture.appendChild(img)
 
                 let details = document.createElement('div')
                 details.classList.add('flex')
@@ -194,53 +195,53 @@
                 details.classList.add('item-details')
 
                 let header = generateFlexbox()
-                header.innerHTML = itemObj.item_name
+                header.innerHTML = itemObj.postContent
                 header.classList.add('item-header')
 
                 let innerDetails = generateFlexbox()
                 innerDetails.classList.add('item-inner-details')
-                innerDetails.id = `${itemObj.item_id}InnerDetails`
+                innerDetails.id = `${itemObj.postID}InnerDetails`
 
-                innerDetails.classList.add('hidden')
+                // innerDetails.classList.add('hidden')
 
-                let price = generateFlexbox()
-                price.classList.add('item-price')
-                price.classList.add('item-detail-cell')
-                price.innerHTML = `Price Per Day: $${itemObj.day_price}`
+                // let price = generateFlexbox()
+                // price.classList.add('item-price')
+                // price.classList.add('item-detail-cell')
+                // price.innerHTML = `Price Per Day: $${itemObj.day_price}`
 
-                let zip = generateFlexbox()
-                zip.classList.add('item-zip')
-                zip.classList.add('item-detail-cell')
-                zip.innerHTML = `Zipcode: ${itemObj.item_zipcode}`
+                // let zip = generateFlexbox()
+                // zip.classList.add('item-zip')
+                // zip.classList.add('item-detail-cell')
+                // zip.innerHTML = `Zipcode: ${itemObj.item_zipcode}`
 
                 let description = generateFlexbox()
                 description.classList.add('item-desc')
-                description.innerHTML = `${itemObj.item_description}`
+                description.innerHTML = `Category: ${itemObj.postCategory}`
                 description.classList.add('item-detail-cell')
 
                 details.appendChild(header)
 
-                innerDetails.appendChild(price)
-                innerDetails.appendChild(zip)
+                // innerDetails.appendChild(price)
+                //innerDetails.appendChild(zip)
                 innerDetails.appendChild(description)
                 
 
                 details.appendChild(innerDetails)
 
-                let checkoutButton = document.createElement('div');
-                checkoutButton.classList.add('item-button')
-                checkoutButton.innerHTML = '<u><b>Checkout'
-                checkoutButton.id = `${itemObj.item_id}CheckoutButton`
-                console.log(checkoutButton.id)
-                checkoutButton.classList.add('item-detail-cell')
+                // let checkoutButton = document.createElement('div');
+                // checkoutButton.classList.add('item-button')
+                // checkoutButton.innerHTML = '<u><b>Checkout'
+                // checkoutButton.id = `${itemObj.item_id}CheckoutButton`
+                // console.log(checkoutButton.id)
+                // checkoutButton.classList.add('item-detail-cell')
 
-                innerDetails.appendChild(checkoutButton)
+                // innerDetails.appendChild(checkoutButton)
 
                 let dropdownIcon = document.createElement('div');
                 dropdownIcon.classList.add('dropdown-icon')
                 dropdownIcon.id = `${itemObj.item_id}Chevron`
 
-                itemContainer.appendChild(picture)
+                // itemContainer.appendChild(picture)
                 itemContainer.appendChild(details)
                 itemContainer.appendChild(dropdownIcon)
                 listContainer.appendChild(itemContainer)
@@ -261,21 +262,21 @@
                     }
                 })
 
-                img.addEventListener('click', (e) => {
-                    let targetId = e.target.id.split('P', 1)[0]
+                // img.addEventListener('click', (e) => {
+                //     let targetId = e.target.id.split('P', 1)[0]
 
-                    if (feedState.activeId === targetId) {
-                        rotate(targetId)
-                        feedState.activeId = null
-                    } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
-                        rotate(feedState.activeId)
-                        rotate(targetId)
-                        feedState.activeId = targetId
-                    } else if (feedState.activeId === null) {
-                        rotate(targetId)
-                        feedState.activeId = targetId
-                    }
-                })
+                //     if (feedState.activeId === targetId) {
+                //         rotate(targetId)
+                //         feedState.activeId = null
+                //     } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
+                //         rotate(feedState.activeId)
+                //         rotate(targetId)
+                //         feedState.activeId = targetId
+                //     } else if (feedState.activeId === null) {
+                //         rotate(targetId)
+                //         feedState.activeId = targetId
+                //     }
+                // })
 
             }
 

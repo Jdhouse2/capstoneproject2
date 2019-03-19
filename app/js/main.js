@@ -6,7 +6,7 @@ const constants = {
         'Log In': 'EATLogon',
         'Log Out': 'logout',
         'Sign Up': 'signup',
-        'Add Item': 'AddAnItem',
+        'Add Post': 'AddAnItem',
         'My Account' : 'myaccount'
     },
     navElementClasses: [

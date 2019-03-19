@@ -56,6 +56,7 @@
                     success: function (msg) {
                     
                         localStorage.setItem("ownerid", msg[0].id);
+                        document.cookie = `ownerid=${msg[0].id}`
                         window.location.href = "/app/feed.html";
 
                     },

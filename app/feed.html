@@ -31,7 +31,6 @@
                     <option value="Gardening">Gardening</option>
                 </select>
                 <input type='number' id='zipCode' placeholder='Zip Code'/>
-
             </div>
             <div class='listContainer'>
                 <div id='noItems' class='hidden'>
@@ -47,7 +46,26 @@
                 activeId: null,
             }
 
+            function changeURL(tag){
+                history.pushState(null, '', `/app/feed.html?tag=${tag}`);
+                clearItems();
+                feedState.items.forEach((item) => {
+                    if(item.item_category === tag){
+                        addToUi(item)
+                    }
+                })
+            }
+
+            function renderUICategory(dept) {
+                feedState.items.forEach((item) => {
+                    if(item.item_category === dept){
+                        addToUi(item)
+                    }
+                })
+            }
+
             function getItems() {
+                console.log(decodeURIComponent(document.cookie))
                 $.ajax({
                     type: "GET",
                     url: '/api/get-items',
@@ -76,6 +94,13 @@
                 }).done((msg) => {
                     msg.forEach((item) => {
                         console.log(feedState)
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if(urlParams.get('tag')) {
+                            clearItems()
+                            renderUICategory(urlParams.get('tag'))
+                        }
+
                         addToUi(item)
                     })
                 })
@@ -142,6 +167,10 @@
                     chevron.classList.add('rotate')
                     targetInnerDetails.classList.remove('hidden')
                 }
+            }
+
+            function clearItems(){
+                document.querySelector('.listContainer').innerHTML = ''
             }
 
             function addToUi(itemObj) {

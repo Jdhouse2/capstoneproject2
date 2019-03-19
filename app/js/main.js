@@ -1,13 +1,16 @@
 const constants = {
     nav: {
-        'Home': 'home',
-        'About': 'about',
-        'Feed': 'feed',
-        'Log In': 'EATLogon',
-        'Log Out': 'logout',
-        'Sign Up': 'signup',
-        'Add Post': 'AddAnItem',
-        'My Account' : 'myaccount'
+        'Home': 'home.html',
+        'About': 'about.html',
+        'All': 'feed.html',
+        'Finance': 'feed.html?tag=Finance',
+        'IT': 'feed.html?tag=IT',
+        'Marketing': 'feed.html?tag=Marketing',
+        'Log In': 'EATLogon.html',
+        'Log Out': 'logout.html',
+        'Sign Up': 'signup.html',
+        'Add Post': 'AddAnItem.html',
+        'My Account' : 'myaccount.html'
     },
     navElementClasses: [
         'nav-item',
@@ -24,6 +27,9 @@ function checkAuth() {
         document.querySelectorAll("a[href='logout.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='AddAnItem.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='myaccount.html']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=Finance']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=Marketing']")[0].style.display = "none";
+        document.querySelectorAll("a[href='feed.html?tag=IT']")[0].style.display = "none";
 
         // No not display log out or add items buttons
     } else {
@@ -69,7 +75,7 @@ function generateNavigationBar(){
         let nav = generateFlexbox()
             nav.classList.add('flex-right')
         for(let key in constants.nav){
-            nav.appendChild(generateLink(key, `${constants.nav[key]}.html`, constants.navElementClasses))
+            nav.appendChild(generateLink(key, `${constants.nav[key]}`, constants.navElementClasses))
         }
 
         navBar.appendChild(nav)

@@ -1,13 +1,16 @@
 const constants = {
     nav: {
-        'Home': 'home',
-        'About': 'about',
-        'Feed': 'feed',
-        'Log In': 'EATLogon',
-        'Log Out': 'logout',
-        'Sign Up': 'signup',
-        'Add Post': 'AddAnItem',
-        'My Account' : 'myaccount'
+        'Home': 'home.html',
+        'About': 'about.html',
+        'All': 'feed.html',
+        'Finance': 'feed.html?tag=Finance',
+        'IT': 'feed.html?tag=IT',
+        'Marketing': 'feed.html?tag=Marketing',
+        'Log In': 'EATLogon.html',
+        'Log Out': 'logout.html',
+        'Sign Up': 'signup.html',
+        'Add Post': 'AddAnItem.html',
+        'My Account' : 'myaccount.html'
     },
     navElementClasses: [
         'nav-item',
@@ -69,7 +72,7 @@ function generateNavigationBar(){
         let nav = generateFlexbox()
             nav.classList.add('flex-right')
         for(let key in constants.nav){
-            nav.appendChild(generateLink(key, `${constants.nav[key]}.html`, constants.navElementClasses))
+            nav.appendChild(generateLink(key, `${constants.nav[key]}`, constants.navElementClasses))
         }
 
         navBar.appendChild(nav)

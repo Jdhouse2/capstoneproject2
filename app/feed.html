@@ -178,16 +178,7 @@
                 let listContainer = document.querySelector('.listContainer')
                 let itemContainer = generateFlexbox()
                 itemContainer.classList.add('item-container')
-                itemContainer.id = itemObj.item_id
-                // let imgHref = determineHref(itemObj.item_category)
-                // let img = document.createElement('img')
-                // img.src = imgHref
-                // img.id = `${itemObj.item_id}Picture`
-                // img.classList.add('item-img-icon')
-
-
-                // let picture = generateDiv('', ['item-img'])
-                // picture.appendChild(img)
+                itemContainer.id = itemObj.postID
 
                 let details = document.createElement('div')
                 details.classList.add('flex')
@@ -202,17 +193,21 @@
                 innerDetails.classList.add('item-inner-details')
                 innerDetails.id = `${itemObj.postID}InnerDetails`
 
-                // innerDetails.classList.add('hidden')
+                innerDetails.classList.add('hidden')
 
-                // let price = generateFlexbox()
-                // price.classList.add('item-price')
-                // price.classList.add('item-detail-cell')
-                // price.innerHTML = `Price Per Day: $${itemObj.day_price}`
+                let upArrow = generateFlexbox()
+                    upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count'>0</div>`
+                    upArrow.classList.add('up-arrow')
+                    upArrow.classList.add('arrow')
 
-                // let zip = generateFlexbox()
-                // zip.classList.add('item-zip')
-                // zip.classList.add('item-detail-cell')
-                // zip.innerHTML = `Zipcode: ${itemObj.item_zipcode}`
+                let downArrow = generateFlexbox()
+                    downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count'>0</div>`
+                    downArrow.classList.add('down-arrow')
+                    downArrow.classList.add('arrow')
+                    
+                
+                innerDetails.appendChild(upArrow)
+                innerDetails.appendChild(downArrow)
 
                 let description = generateFlexbox()
                 description.classList.add('item-desc')
@@ -221,8 +216,6 @@
 
                 details.appendChild(header)
 
-                // innerDetails.appendChild(price)
-                //innerDetails.appendChild(zip)
                 innerDetails.appendChild(description)
                 
 
@@ -239,7 +232,7 @@
 
                 let dropdownIcon = document.createElement('div');
                 dropdownIcon.classList.add('dropdown-icon')
-                dropdownIcon.id = `${itemObj.item_id}Chevron`
+                dropdownIcon.id = `${itemObj.postID}Chevron`
 
                 // itemContainer.appendChild(picture)
                 itemContainer.appendChild(details)
@@ -385,9 +378,9 @@
 
             function initFeed() {
                 getItems()
-                attachZipFilterEvent()
-                attachCategoryFilterEvent()
-                attachSearchfilter()
+                // attachZipFilterEvent()
+                // attachCategoryFilterEvent()
+                // attachSearchfilter()
             }
 
             init()

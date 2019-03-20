@@ -281,3 +281,19 @@ input:focus {
 
 }
 
+.arrow {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+.arrow img {
+    height: 100%; 
+    width: 100%;
+}
+
+#down-v-icon {
+    transform: rotate(180deg);
+}
+

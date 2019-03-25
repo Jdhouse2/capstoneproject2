@@ -159,7 +159,13 @@ app.get('/api/verify-user', function(req, res) {
       });
 });
 
+app.get('/api/get-posts', function(req, res) {
 
+    con.query('select * from posts', function (err, result, fields) {
+        if (err) throw err;
+        res.send(result)
+      });
+});
 
 // app.post('/app/test-pull', function(req, res) {
 //     res.send('hello!');

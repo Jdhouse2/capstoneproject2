@@ -5,11 +5,55 @@
 </head>
 <body>
 	<h2>My Account Information</h2>
-	<div id="userPoints">
-		My Points:
-	</div>
-	<div id="userPosts">
-		My Posts:
-	</div>
+	<table class="postTable" id="myPosts">
+		<tr>
+			<th>My Posts</th>
+		</tr>
+		<tr>
+			<th>Upvotes</th>
+			<th>Downvotes</th>
+			<th>Category</th>
+			<th>Post</th>
+		</tr>
+	</table>
+	<script>
+		function getItems() {
+                $.ajax({
+                    type: "GET",
+                    url: '/api/get-posts',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (msg) {
+                        console.log(msg);
+                        var table = document.getElementById("postTable");
+                        for (i = 0; i < msg.length; i++) {
+                            var thisOwner = msg[i].originalPosterID;
+                            if (thisOwner == localStorage.getItem('originalPosterID')) {
+                                var upvotes = msg[i].voteCount;
+                                var downvotes = msg[i].downVoteCount;
+                                var category = msg[i].postCategory;
+                                var	post = msg[i].postContent;
+
+                                var row = table.insertRow(2);
+                                var upvoteCell = row.insertCell(0);
+                                var downvoteCell = row.insertCell(1);
+                                var categoryCell = row.insertCell(2);
+                                var postCell = row.insertCell(3);
+
+                                // Fill Cells
+                                upvoteCell.innerHTML = upvotes;
+                                downvoteCell.innerHTML = downvotes;
+                                categoryCell.innerHTML = category;
+                                postCell.innerHTML = post;
+                            }
+                        }
+                    },
+                    error: function (e) {
+                        console.log('failure')
+                        console.log(e)
+                    }
+                });
+            }
+	</script>
 </body>
 </html>

@@ -221,7 +221,6 @@ app.get('/api/verify-user', function(req, res) {
       });
 });
 
-<<<<<<< HEAD
 app.get('/api/get-votes', function(req, res) {
 
     let q = req.query
@@ -237,9 +236,7 @@ app.get('/api/get-votes', function(req, res) {
 });
 
 
-=======
 app.get('/api/get-posts', function(req, res) {
->>>>>>> b7fb31df42b9f11d7fdad85bf1879224a77a211d
 
     con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;

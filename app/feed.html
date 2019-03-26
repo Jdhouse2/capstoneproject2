@@ -43,21 +43,27 @@
             let feedState = {
                 items: [],
                 itemsObject: {},
+                votedItems: {},
                 activeId: null,
             }
 
             function changeURL(tag){
                 history.pushState(null, '', `/app/feed.html?tag=${tag}`);
                 clearItems();
-                feedState.items.forEach((item) => {
-                    if(item.item_category === tag){
-                        addToUi(item)
-                    }
-                })
+
+                feedState.items.sort(function(a, b) {
+                        return b.voteCount - a.voteCount;
+                    }).forEach((item) => {
+                        if(item.item_category === tag){
+                            addToUi(item)
+                        }
+                    })
             }
 
             function renderUICategory(dept) {
-                feedState.items.forEach((item) => {
+                feedState.items.sort(function(a, b) {
+                        return b.voteCount - a.voteCount;
+                    }).forEach((item) => {
                     if(item.postCategory === dept){
                         addToUi(item)
                     }
@@ -84,27 +90,45 @@
                                 available: item.available,
                             }
                         });
-
                         console.log(feedState)
                     },
                     error: function (e) {
                         console.log('failure')
                         console.log(e)
                     }
-                }).done((msg) => {
-                    console.log(feedState)
-                    msg.forEach((item) => {
-                        
-                        
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if(urlParams.get('tag')) {
-                            clearItems()
-                            renderUICategory(urlParams.get('tag'))
-                        }
+                }).done((msg) => {$.ajax({
+                            type: "GET",
+                            url: '/api/get-votes',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: {userId: Number(localStorage.getItem("id"))},
+                            success: function (msg) {
+                                msg.forEach((row) => {
+                                    feedState.votedItems[`p${row.p_id}`] = {vc_id: row.vc_id, up_or_down: row.up_or_down}
+                                })
+                                console.log(feedState)
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        }).done((msg) => {
+                            console.log(feedState)
+                            feedState.items.sort(function(a, b) {
+                                return b.voteCount - a.voteCount;
+                            }).forEach((item) => {
+                                
+                                
+                                const urlParams = new URLSearchParams(window.location.search);
+                                if(urlParams.get('tag')) {
+                                    clearItems()
+                                    renderUICategory(urlParams.get('tag'))
+                                }
 
-                        addToUi(item)
+                                addToUi(item)
+                            })
+                        })
                     })
-                })
             }
             function makeItemObj() {
                 let item_id = document.getElementById('item_id').value
@@ -196,15 +220,137 @@
                 innerDetails.classList.add('hidden')
 
                 let upArrow = generateFlexbox()
-                    upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count'>0</div>`
+                    upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count' id='ua_${itemObj.postID}'>${itemObj.voteCount}</div>`
                     upArrow.classList.add('up-arrow')
                     upArrow.classList.add('arrow')
 
+                    if (feedState.votedItems) {
+                        let post_id = `p${itemObj.postID}`
+
+                        if (feedState.votedItems[post_id]) {
+                            if (feedState.votedItems[post_id].up_or_down === "up") {
+                                upArrow.classList.add('voted')
+                            }
+                        }
+                    }
+
+                    upArrow.addEventListener("click", () => {
+
+                        let currentCount = itemObj.voteCount
+
+                        if (Number(currentCount) !== Number(document.getElementById(`ua_${itemObj.postID}`).innerHTML)){
+                            currentCount = document.getElementById(`ua_${itemObj.postID}`).innerHTML;
+                        }
+
+                        let postDetails = {
+                            postId: itemObj.postID,
+                            userId: 1,
+                            itemCount: currentCount,
+                        }
+
+                        if (upArrow.classList.contains('voted')) {
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/upvote-reset',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    upArrow.classList.remove('voted')
+                                    document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+                                    location.reload()
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/upvote',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    upArrow.classList.add('voted')
+                                    document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+                                    location.reload()
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        }
+                    })
+
                 let downArrow = generateFlexbox()
-                    downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count'>0</div>`
+                    downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count' id='da_${itemObj.postID}'>${itemObj.downVoteCount}</div>`
                     downArrow.classList.add('down-arrow')
                     downArrow.classList.add('arrow')
                     
+
+                    if (feedState.votedItems) {
+                        let post_id = `p${itemObj.postID}`
+
+                        if (feedState.votedItems[post_id]) {
+                            if (feedState.votedItems[post_id].up_or_down === "down") {
+                                downArrow.classList.add('voted')
+                            }
+                        }
+                    }
+
+                    downArrow.addEventListener("click", () => {
+
+                        let currentDownCount = itemObj.downVoteCount
+
+                        if (Number(currentDownCount) !== Number(document.getElementById(`da_${itemObj.postID}`).innerHTML)){
+                            currentDownCount = document.getElementById(`da_${itemObj.postID}`).innerHTML;
+                        }
+
+                        let postDetails = {
+                            postId: itemObj.postID,
+                            userId: 1,
+                            itemCount: currentDownCount,
+                        }
+
+                        if (downArrow.classList.contains('voted')) {
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/downvote-reset',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    downArrow.classList.remove('voted')
+                                    document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                    location.reload()
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/downvote',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    downArrow.classList.add('voted')
+                                    document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                    location.reload()
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        }
+                    })
                 
                 innerDetails.appendChild(upArrow)
                 innerDetails.appendChild(downArrow)

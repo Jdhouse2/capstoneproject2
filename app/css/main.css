@@ -116,6 +116,10 @@
     transition: height 1.2s;
 }
 
+.voted {
+    background-color: orange;
+}
+
 .item-container:hover {
     background-color: rgba(0, 204, 102, .2);
 }

@@ -61,6 +61,7 @@
             }
 
             function renderUICategory(dept) {
+                clearItems();
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
                     }).forEach((item) => {
@@ -113,17 +114,21 @@
                                 console.log(e)
                             }
                         }).done((msg) => {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            if(urlParams.get('tag')) {
+                                clearItems()
+                                renderUICategory(urlParams.get('tag'))  
+                                return;
+                            }
+                            console.log("yo")
                             console.log(feedState)
                             feedState.items.sort(function(a, b) {
                                 return b.voteCount - a.voteCount;
                             }).forEach((item) => {
                                 
                                 
-                                const urlParams = new URLSearchParams(window.location.search);
-                                if(urlParams.get('tag')) {
-                                    clearItems()
-                                    renderUICategory(urlParams.get('tag'))
-                                }
+                                
+                                
 
                                 addToUi(item)
                             })

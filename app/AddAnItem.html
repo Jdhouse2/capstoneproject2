@@ -11,26 +11,22 @@
     <script src='./js/main.js'></script>
 
 	<script>
-		var itemName = "";
-		var description = "";
-		var zipCode = 0;
-		var category = "";
+		var postContent = "";
+		var postCat = "";
 
-        function addItem(form) {
-            itemName = document.getElementById("itemName").value;
-            description = document.getElementById("description").value;
-            zipCode = document.getElementById("zipCode").value;
+        function addPost(form) {
+            postContent = document.getElementById("postContent").value;
             category = document.getElementById("category");
             var catValue = category.options[category.selectedIndex].text;
-            var ownerid = localStorage.getItem("ownerid");
+            var originalPosterID = localStorage.getItem("ownerid");
 
             $.ajax({
                 type: "GET",
-                url: ['/app/addAnItem'],
+                url: ['/app/addAPost'],
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: {
-                    itemName, description, zipCode, catValue, ownerid
+                    originalPosterID, postContent, catValue
                 },
                 success: function (msg) {
                     console.log('success')
@@ -41,9 +37,7 @@
                     console.log(e)
                 }
             })
-            console.log(itemName);
-            console.log(description);
-            console.log(zipCode);
+            console.log(postContent);
             console.log(catValue);
         }
     </script>
@@ -58,21 +52,14 @@
     </div>
     <div id="inputDiv">
         <form id="itemInput">
-            Name: <input id="itemName" type="text" required> <br>
-            Description: <input id="description" type="text" required> <br>
-            ZipCode: <input id="zipcode1" type="text" required> <br>
-            Price Per Day: <input id="price" type="number" required> <br>
-            Item Category: <select name="Categories" id="category1" required>
-                <option value="Garden">Garden</option>
-                <option value="Cooking">Cooking</option>
-                <option value="Home Improvement">Home Improvement</option>
-                <option value="Sports">Sports</option>
-                <option value="Toys">Toys</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Media/Entertainment">Media/Entertainment</option>
-                <option value="Books">Books</option>
+            <!-- Title: <input id="postTitle" type="text" required> <br> -->
+            Body: <input id="postBody" type="text" required> <br>
+            Post Category: <select name="Categories" id="category1" required>
+                <option value="Finance">Finance</option>
+                <option value="IT">IT</option>
+                <option value="Marketing">Marketing</option>
             </select> <br>
-            <button id="addButton" type="button" onclick="createItem(generateItemObj())">Add</button>
+            <button id="addButton" type="button" onclick="createPost(generatePostObj())">Post</button>
             <button type="reset">Clear</button>
         </form>
     </div>
@@ -80,34 +67,26 @@
 
 
         // create items
-        function generateItemObj() {
-            //('${q.itemName}', '${q.itemCat}', '${q.itemZip}', '${q.itemDesc}', '${q.id}', ${q.zip}, 1)
-            let itemName =  document.getElementById("itemName").value;
-            let itemCat =   document.getElementById("category1").value;
-            let itemZip =   document.getElementById("zipcode1").value;
-            let itemDesc =  document.getElementById("description").value;
-            let id =        parseFloat(localStorage.getItem('ownerid'));
-            let price =     document.getElementById("price").value;
+        function generatePostObj() {
+            let postCat =   document.getElementById("category1").value;
+            let postContent =  document.getElementById("postBody").value;
+            let originalPosterID = parseFloat(localStorage.getItem('ownerid'));
 
             return {
-                itemName,
-                itemCat,
-                itemZip,
-                itemDesc,
-                id,
-                price
+                originalPosterID,
+                postCat,
+                postContent
             }
-
         }
 
-        function createItem(itemObj) {
+        function createPost(postObj) {
             
                 $.ajax({
                     type: "GET",
-                    url: '/api/testitempush',
+                    url: '/api/testpostpush',
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    data: itemObj,
+                    data: postObj,
                     success: function (msg) {
                         window.location.href = "/app/feed.html";
                     },

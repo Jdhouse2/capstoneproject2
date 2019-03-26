@@ -76,11 +76,11 @@ app.post('/api/deleteitem', function (req, res) {
     });
 });
 
-app.get('/api/testitempush', function (req, res) {
+app.get('/api/testpostpush', function (req, res) {
 
     console.log(req.query)
     let q = req.query
-    let queryString = `INSERT INTO item (item_name, item_category, item_zipcode, item_description, owner_id, available, day_price) VALUES ("${q.itemName}", "${q.itemCat}", ${q.itemZip}, "${q.itemDesc}", ${q.id}, 1, ${q.price})`
+    let queryString = `INSERT INTO posts (originalPosterID, postcategory, voteCount, postContent, downVoteCount) VALUES ("${q.originalPosterID}", "${q.postCat}", 0, "${q.postContent}", 0)`
     console.log(queryString)
     con.query(queryString, function (err, result, fields) {
         if (err) throw err;
@@ -124,8 +124,8 @@ app.get('/api/checkout-item', function (req, res) {
 });
 
 
-app.get('/app/addAnItem', function(req, res) {
-    con.query('select item_name, item_category, item_zipcode, item_description from item', function (err, result, fields) {
+app.get('/app/addAPost', function(req, res) {
+    con.query('select postCategory, postContent from posts', function (err, result, fields) {
         if (err) throw err;
         res.send(JSON.stringify(result))
 

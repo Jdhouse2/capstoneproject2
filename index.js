@@ -144,6 +144,68 @@ app.get('/api/getuserinfo', function (req, res) {
     });
 });
 
+app.get('/api/upvote', function (req, res) {
+
+   
+    let queryString1 = `UPDATE posts set voteCount = ${Number(req.query.itemCount) + 1} where postID = ${req.query.postId};`; 
+    let queryString2 = `INSERT into votecheck (u_id, p_id, up_or_down) VALUES (${req.query.userId}, ${req.query.postId}, 'up');`
+    console.log(queryString1)
+    con.query(queryString1, function (err, result, fields) {
+        if (err) throw err;
+        con.query(queryString2, function (err, result, fields) {
+            if (err) throw err;
+            res.send({count: Number(req.query.itemCount) + 1})
+        });
+    });
+});
+
+
+app.get('/api/upvote-reset', function (req, res) {
+
+   
+    let queryString1 = `UPDATE posts set voteCount = ${Number(req.query.itemCount) - 1} where postID = ${req.query.postId};`; 
+    let queryString2 = `DELETE FROM votecheck where u_id = ${req.query.userId} and p_id = ${req.query.postId} and up_or_down = 'up';`
+    console.log(queryString1)
+    con.query(queryString1, function (err, result, fields) {
+        if (err) throw err;
+        con.query(queryString2, function (err, result, fields) {
+            if (err) throw err;
+            res.send({count: Number(req.query.itemCount) - 1})
+        });
+    });
+});
+
+app.get('/api/downvote', function (req, res) {
+
+   
+    let queryString1 = `UPDATE posts set downVoteCount = ${Number(req.query.itemCount) + 1} where postID = ${req.query.postId};`; 
+    let queryString2 = `INSERT into votecheck (u_id, p_id, up_or_down) VALUES (${req.query.userId}, ${req.query.postId}, 'down');`
+    console.log(queryString1)
+    con.query(queryString1, function (err, result, fields) {
+        if (err) throw err;
+        con.query(queryString2, function (err, result, fields) {
+            if (err) throw err;
+            res.send({count: Number(req.query.itemCount) + 1})
+        });
+    });
+});
+
+
+app.get('/api/downvote-reset', function (req, res) {
+
+   
+    let queryString1 = `UPDATE posts set downVoteCount = ${Number(req.query.itemCount) - 1} where postID = ${req.query.postId};`; 
+    let queryString2 = `DELETE FROM votecheck where u_id = ${req.query.userId} and p_id = ${req.query.postId} and up_or_down = 'down';`
+    console.log(queryString1)
+    con.query(queryString1, function (err, result, fields) {
+        if (err) throw err;
+        con.query(queryString2, function (err, result, fields) {
+            if (err) throw err;
+            res.send({count: Number(req.query.itemCount) - 1})
+        });
+    });
+});
+
 app.get('/api/verify-user', function(req, res) {
 
     console.log(req.query)
@@ -158,6 +220,21 @@ app.get('/api/verify-user', function(req, res) {
         res.send(result)
       });
 });
+
+app.get('/api/get-votes', function(req, res) {
+
+    let q = req.query
+    console.log(q)
+    let queryString = `SELECT * FROM votecheck WHERE u_id = ${q.userId};`
+    console.log(queryString)
+    con.query(queryString, function (err, result, fields) {
+
+        if (err) throw err;
+        console.log(result)
+        res.send(result)
+      });
+});
+
 
 app.get('/api/get-posts', function(req, res) {
 

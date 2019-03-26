@@ -10,7 +10,7 @@ const constants = {
         'Log Out': 'logout.html',
         'Sign Up': 'signup.html',
         'Add Post': 'AddAnItem.html',
-        'My Account' : 'myaccount.html'
+        'My Account' : 'AccountPage.html'
     },
     navElementClasses: [
         'nav-item',

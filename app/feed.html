@@ -102,7 +102,7 @@
                             url: '/api/get-votes',
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
-                            data: {userId: Number(localStorage.getItem("id"))},
+                            data: {userId: Number(localStorage.getItem("ownerid"))},
                             success: function (msg) {
                                 msg.forEach((row) => {
                                     feedState.votedItems[`p${row.p_id}`] = {vc_id: row.vc_id, up_or_down: row.up_or_down}
@@ -125,10 +125,6 @@
                             feedState.items.sort(function(a, b) {
                                 return b.voteCount - a.voteCount;
                             }).forEach((item) => {
-                                
-                                
-                                
-                                
 
                                 addToUi(item)
                             })

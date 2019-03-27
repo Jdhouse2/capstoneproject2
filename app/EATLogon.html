@@ -46,7 +46,7 @@
 
             }
           function validateUser(userObj) {
-            
+
                 $.ajax({
                     type: "GET",
                     url: '/api/verify-user',
@@ -55,8 +55,8 @@
                     data: userObj,
                     success: function (msg) {
                     
-                        localStorage.setItem("ownerid", msg[0].id);
-                        document.cookie = `ownerid=${msg[0].id}`
+                        localStorage.setItem("ownerid", msg[0].employeeID);
+                        document.cookie = `ownerid=${msg[0].employeeID}`
                         window.location.href = "/app/feed.html";
 
                     },

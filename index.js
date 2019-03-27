@@ -71,7 +71,7 @@ app.post('/api/deleteitem', function (req, res) {
     let queryString = `DELETE FROM item WHERE item_id = ${q.id}`;
     console.log(queryString);
     con.query(queryString, function (err, result, fields) {
-        if (err) throw err;
+        if (err) throw err; 
         res.send({ 'success': 'true' })
     });
 });

@@ -35,7 +35,7 @@
                     dataType: "json",
                     success: function (msg) {
                         console.log(msg);
-                        var table = document.getElementById("postTable");
+                        var table = document.getElementById("myPosts");
                         for (i = 0; i < msg.length; i++) {
                             var thisOwner = msg[i].originalPosterID;
                             if (thisOwner == localStorage.getItem('originalPosterID')) {

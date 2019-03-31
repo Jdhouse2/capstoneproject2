@@ -113,7 +113,7 @@
     align-items: center;
 
     height: 7vw;
-    transition: height 1.2s;
+    transition: height 1.4s, min-height 1.4s;
 }
 
 .voted {
@@ -122,6 +122,37 @@
 
 .item-container:hover {
     background-color: rgba(0, 204, 102, .2);
+}
+
+.item-inner-details {
+    flex-direction: column !important;
+}
+
+.arrowContainer {
+    display: flex;
+}
+
+.postComment {
+    display: flex;
+    width: 100%;
+    margin: 0 20px;
+}
+
+.commentInput {
+    resize: none;
+}
+
+.commentSubmitButton {
+    padding: 10px;
+    background-color: rgba(0, 0, 204, 0.5);
+    color: white;
+    cursor: pointer;
+}
+
+.commentSection {
+    background-color: rgba(0, 204, 102, .5);
+    width: 100%;
+    padding: 10px 25px;
 }
 
 .item-img {
@@ -160,7 +191,8 @@
 }
 
 .active {
-    height: 20vh;
+    max-height: 100vh;
+    height: fit-content;
     align-items: flex-start;
     background-color: rgba(0, 204, 102, .2);
 }

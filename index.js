@@ -132,6 +132,17 @@ app.get('/app/addAPost', function(req, res) {
     });
 });
 
+app.get('/api/postComment', function(req, res) {
+    let queryObj = req.query
+    let queryString = `INSERT INTO posts (originalPosterID, postCategory, voteCount, postContent, downVoteCount, childOf) values (${queryObj.user}, '', 0, '${queryObj.post}', 0, ${queryObj.attachTo});`
+    con.query(queryString, function (err, result, fields) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+
+    });
+});
+
+
 
 app.get('/api/getuserinfo', function (req, res) {
 

@@ -45,6 +45,7 @@
                 itemsObject: {},
                 votedItems: {},
                 activeId: null,
+                activeChild: null,
             }
 
             function changeURL(tag){
@@ -55,7 +56,11 @@
                         return b.voteCount - a.voteCount;
                     }).forEach((item) => {
                         if(item.item_category === tag){
-                            addToUi(item)
+                            if (!item.childOf) {
+                                addToUi(item)
+                            } else {
+                                addToUi(item, item.childOf)
+                            }
                         }
                     })
             }
@@ -66,7 +71,11 @@
                         return b.voteCount - a.voteCount;
                     }).forEach((item) => {
                     if(item.postCategory === dept){
-                        addToUi(item)
+                        if (!item.childOf) {
+                                addToUi(item)
+                        } else {
+                            addToUi(item, item.childOf)
+                        }
                     }
                 })
             }
@@ -125,8 +134,12 @@
                             feedState.items.sort(function(a, b) {
                                 return b.voteCount - a.voteCount;
                             }).forEach((item) => {
-
-                                addToUi(item)
+                                if (!item.childOf) {
+                                    addToUi(item)
+                                } else {
+                                    addToUi(item, item.childOf)
+                                }
+                                
                             })
                         })
                     })
@@ -177,12 +190,19 @@
                 }
             }
 
-            function rotate(id) {
+            function rotate(id, child) {
                 let targetToRotate = document.getElementById(`${id}`)
                 let targetInnerDetails = document.getElementById(`${id}InnerDetails`)
                 console.log(id)
                 console.log(targetToRotate)
-                let chevron = document.getElementById(`${id}Chevron`)
+                let chevron
+                
+                if (child) {
+                    chevron = document.getElementById(`${id}Chevron-t`)
+                } else {
+                    chevron = document.getElementById(`${id}Chevron`)
+                }
+                
 
                 if (targetToRotate.classList.contains('active')) {
                     targetToRotate.classList.remove('active')
@@ -199,7 +219,7 @@
                 document.querySelector('.listContainer').innerHTML = ''
             }
 
-            function addToUi(itemObj) {
+            function addToUi(itemObj, childOf) {
                 let listContainer = document.querySelector('.listContainer')
                 let itemContainer = generateFlexbox()
                 itemContainer.classList.add('item-container')
@@ -352,71 +372,140 @@
                             })
                         }
                     })
-                
-                innerDetails.appendChild(upArrow)
-                innerDetails.appendChild(downArrow)
+
+                let arrowContainer = document.createElement('div')
+                    arrowContainer.classList.add('arrowContainer')
 
                 let description = generateFlexbox()
-                description.classList.add('item-desc')
-                description.innerHTML = `Category: ${itemObj.postCategory}`
-                description.classList.add('item-detail-cell')
+                    description.classList.add('item-desc')
+                    description.innerHTML = `Category: ${itemObj.postCategory}`
+                    description.classList.add('item-detail-cell')
 
+                let inputContainer = document.createElement('div')
+                    inputContainer.classList.add('postComment')
+                    inputContainer.id = `${itemObj.postID}-post-container`
+                
+                let input = document.createElement('textarea');
+                    input.rows = '3'
+                    input.cols = '75'
+                    input.placeholder = 'Write a Comment...'
+                    input.classList.add('commentInput')
+                    input.id = `${itemObj.postID}-post-comment`
+
+                let inputButton = document.createElement('div');
+                    inputButton.classList.add('commentSubmitButton');
+                    inputButton.id = `${itemObj.postID}-post-button`
+                    inputButton.innerHTML = 'Comment'
+
+                    inputButton.addEventListener('click', () => {
+                        let input = document.getElementById(`${itemObj.postID}-post-comment`)
+
+                        let value = input.value
+
+                        let dataObj = {
+                            user: localStorage.getItem("ownerid"),
+                            attachTo: itemObj.postID,
+                            post: value
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/postComment',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: dataObj,
+                            success: function (msg) {
+                                console.log('posted!')
+                                location.reload()
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+
+                    })
+
+                let commentArea = document.createElement('div');
+                    commentArea.classList.add('commentSection');
+                    commentArea.id = `${itemObj.postID}-comment-section`
+
+
+                arrowContainer.appendChild(upArrow)
+                arrowContainer.appendChild(downArrow)
+                arrowContainer.appendChild(description)
+
+
+                inputContainer.appendChild(input)
+                inputContainer.appendChild(inputButton)
+                
+                commentArea.appendChild(inputContainer)
+                
+                
+                innerDetails.appendChild(arrowContainer)
+                innerDetails.appendChild(commentArea)  
+
+                
                 details.appendChild(header)
 
-                innerDetails.appendChild(description)
+                
                 
 
                 details.appendChild(innerDetails)
 
-                // let checkoutButton = document.createElement('div');
-                // checkoutButton.classList.add('item-button')
-                // checkoutButton.innerHTML = '<u><b>Checkout'
-                // checkoutButton.id = `${itemObj.item_id}CheckoutButton`
-                // console.log(checkoutButton.id)
-                // checkoutButton.classList.add('item-detail-cell')
-
-                // innerDetails.appendChild(checkoutButton)
 
                 let dropdownIcon = document.createElement('div');
                 dropdownIcon.classList.add('dropdown-icon')
-                dropdownIcon.id = `${itemObj.postID}Chevron`
+
+                if (itemObj.childOf) {
+                    dropdownIcon.id = `${itemObj.postID}Chevron-t`
+                } else {
+                    dropdownIcon.id = `${itemObj.postID}Chevron`
+                }
+                
 
                 // itemContainer.appendChild(picture)
                 itemContainer.appendChild(details)
                 itemContainer.appendChild(dropdownIcon)
-                listContainer.appendChild(itemContainer)
+                
+                if (!childOf) {
+                    listContainer.appendChild(itemContainer)
+                } else {
+                    document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+
+                }
+                
 
                 dropdownIcon.addEventListener('click', (e) => {
                     let targetId = e.target.id.split('C', 1)[0]
+                    let childOfId = e.target.id.split('-', 2)[1]
+                    if (childOfId) {
+                        if (feedState.activeChild === targetId) {
+                            rotate(targetId, 1)
+                            feedState.activeChild = null
+                        } else if (feedState.activeChild !== targetId && feedState.activeChild !== null) {
+                            rotate(feedState.activeChild, 1)
+                            rotate(targetId, 1)
+                            feedState.activeChild = targetId
+                        } else if (feedState.activeChild === null) {
+                            rotate(targetId, 1)
+                            feedState.activeChild = targetId
+                        }
 
-                    if (feedState.activeId === targetId) {
-                        rotate(targetId)
-                        feedState.activeId = null
-                    } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
-                        rotate(feedState.activeId)
-                        rotate(targetId)
-                        feedState.activeId = targetId
-                    } else if (feedState.activeId === null) {
-                        rotate(targetId)
-                        feedState.activeId = targetId
+                    } else {
+                        if (feedState.activeId === targetId) {
+                            rotate(targetId)
+                            feedState.activeId = null
+                        } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
+                            rotate(feedState.activeId)
+                            rotate(targetId)
+                            feedState.activeId = targetId
+                        } else if (feedState.activeId === null) {
+                            rotate(targetId)
+                            feedState.activeId = targetId
+                        }
                     }
                 })
-
-                // img.addEventListener('click', (e) => {
-                //     let targetId = e.target.id.split('P', 1)[0]
-
-                //     if (feedState.activeId === targetId) {
-                //         rotate(targetId)
-                //         feedState.activeId = null
-                //     } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
-                //         rotate(feedState.activeId)
-                //         rotate(targetId)
-                //         feedState.activeId = targetId
-                //     } else if (feedState.activeId === null) {
-                //         rotate(targetId)
-                //         feedState.activeId = targetId
-                //     }
-                // })
 
             }
 

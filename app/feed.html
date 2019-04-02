@@ -106,14 +106,18 @@
                         console.log('failure')
                         console.log(e)
                     }
-                }).done((msg) => {$.ajax({
+                }).done((msg) => {
+                    $.ajax({
                             type: "GET",
                             url: '/api/get-votes',
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             data: {userId: Number(localStorage.getItem("ownerid"))},
                             success: function (msg) {
+
+                                console.log('success')
                                 msg.forEach((row) => {
+                                    console.log(row)
                                     feedState.votedItems[`p${row.p_id}`] = {vc_id: row.vc_id, up_or_down: row.up_or_down}
                                 })
                                 console.log(feedState)
@@ -123,6 +127,7 @@
                                 console.log(e)
                             }
                         }).done((msg) => {
+                            console.log('yoooo')
                             const urlParams = new URLSearchParams(window.location.search);
                             if(urlParams.get('tag')) {
                                 clearItems()
@@ -265,11 +270,13 @@
 
                         let postDetails = {
                             postId: itemObj.postID,
-                            userId: 1,
+                            userId: localStorage.getItem("ownerid"),
                             itemCount: currentCount,
                         }
 
                         if (upArrow.classList.contains('voted')) {
+                            
+
                             $.ajax({
                                 type: "GET",
                                 url: '/api/upvote-reset',
@@ -277,9 +284,11 @@
                                 dataType: "json",
                                 data: postDetails,
                                 success: function (msg) {
+                                    
                                     upArrow.classList.remove('voted')
                                     document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
-                                    location.reload()
+                                    updateCount('up', 'del', itemObj.postID)
+                                    sort()
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -287,6 +296,7 @@
                                 }
                             })
                         } else {
+                            
                             $.ajax({
                                 type: "GET",
                                 url: '/api/upvote',
@@ -294,9 +304,11 @@
                                 dataType: "json",
                                 data: postDetails,
                                 success: function (msg) {
+                                    console.log('ittt worrrked')
                                     upArrow.classList.add('voted')
                                     document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
-                                    location.reload()
+                                    updateCount('up', 'add', itemObj.postID)
+                                    sort()
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -337,6 +349,9 @@
                         }
 
                         if (downArrow.classList.contains('voted')) {
+
+                            
+
                             $.ajax({
                                 type: "GET",
                                 url: '/api/downvote-reset',
@@ -346,7 +361,8 @@
                                 success: function (msg) {
                                     downArrow.classList.remove('voted')
                                     document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
-                                    location.reload()
+                                    updateCount('down', 'del', itemObj.postID)
+                                    sort();
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -354,6 +370,9 @@
                                 }
                             })
                         } else {
+
+                            
+
                             $.ajax({
                                 type: "GET",
                                 url: '/api/downvote',
@@ -363,7 +382,8 @@
                                 success: function (msg) {
                                     downArrow.classList.add('voted')
                                     document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
-                                    location.reload()
+                                    updateCount('down', 'add', itemObj.postID)
+                                    sort();
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -376,6 +396,7 @@
                 let arrowContainer = document.createElement('div')
                     arrowContainer.classList.add('arrowContainer')
 
+                
                 let description = generateFlexbox()
                     description.classList.add('item-desc')
                     description.innerHTML = `Category: ${itemObj.postCategory}`
@@ -433,8 +454,10 @@
 
                 arrowContainer.appendChild(upArrow)
                 arrowContainer.appendChild(downArrow)
-                arrowContainer.appendChild(description)
 
+                if (!childOf) {
+                    arrowContainer.appendChild(description)  
+                }
 
                 inputContainer.appendChild(input)
                 inputContainer.appendChild(inputButton)
@@ -482,14 +505,11 @@
                     if (childOfId) {
                         if (feedState.activeChild === targetId) {
                             rotate(targetId, 1)
-                            feedState.activeChild = null
                         } else if (feedState.activeChild !== targetId && feedState.activeChild !== null) {
                             rotate(feedState.activeChild, 1)
                             rotate(targetId, 1)
-                            feedState.activeChild = targetId
                         } else if (feedState.activeChild === null) {
                             rotate(targetId, 1)
-                            feedState.activeChild = targetId
                         }
 
                     } else {
@@ -507,6 +527,33 @@
                     }
                 })
 
+            }
+
+            function updateCount(countType, addOrDel, id) { 
+                console.log('c', countType, 'addD', addOrDel, 'id', id)
+                for (let i = 0; i < feedState.items.length; i++) {
+                    if (feedState.items[i].postID === id) {
+                        console.log('item', feedState.items[i], 'c', countType, 'addD', addOrDel)
+                        if (countType === 'up') {
+                            if (addOrDel === 'add') {
+                                feedState.items[i].voteCount = feedState.items[i].voteCount + 1
+                            } else {
+                                feedState.items[i].voteCount = feedState.items[i].voteCount - 1
+                            }
+                        } else {
+                            if (addOrDel === 'add') {
+                                feedState.items[i].downVoteCount = feedState.items[i].voteCount + 1
+                            } else {
+                                feedState.items[i].downVoteCount = feedState.items[i].voteCount - 1
+                            }
+                        }
+                    }
+                }
+            }
+
+            function sort() {
+                console.log('hello!')
+                console.log(feedState)
             }
 
             function attachSearchfilter(){

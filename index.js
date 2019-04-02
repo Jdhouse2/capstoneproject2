@@ -164,6 +164,7 @@ app.get('/api/upvote', function (req, res) {
     con.query(queryString1, function (err, result, fields) {
         if (err) throw err;
         con.query(queryString2, function (err, result, fields) {
+            console.log('in query 2')
             if (err) throw err;
             res.send({count: Number(req.query.itemCount) + 1})
         });

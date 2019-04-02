@@ -48,15 +48,15 @@ app.get('/app/test-pull', function(req, res) {
       });
 });
 
-app.get('/api/updaterent', function (req, res) {
-    let q = req.query;
-    let queryString = `UPDATE item SET renter_id = NULL, available = 1 WHERE item_id = ${q.itemid}`;
-    console.log(queryString);
-    con.query(queryString, function (err, result, fields) {
-        if (err) throw err;
-        res.send({ 'success': 'true' })
-    });
-});
+//app.get('/api/updaterent', function (req, res) {
+//    let q = req.query;
+//    let queryString = `UPDATE item SET renter_id = NULL, available = 1 WHERE item_id = ${q.itemid}`;
+//    console.log(queryString);
+//    con.query(queryString, function (err, result, fields) {
+//        if (err) throw err;
+//        res.send({ 'success': 'true' })
+//    });
+//});
 
 app.post('/api/clear', function(req, res) {
 
@@ -66,15 +66,15 @@ app.post('/api/clear', function(req, res) {
       });
 });
 
-app.post('/api/deleteitem', function (req, res) {
-    let q = req.query
-    let queryString = `DELETE FROM item WHERE item_id = ${q.id}`;
-    console.log(queryString);
-    con.query(queryString, function (err, result, fields) {
-        if (err) throw err; 
-        res.send({ 'success': 'true' })
-    });
-});
+//app.post('/api/deleteitem', function (req, res) {
+//    let q = req.query
+//    let queryString = `DELETE FROM item WHERE item_id = ${q.id}`;
+//    console.log(queryString);
+//    con.query(queryString, function (err, result, fields) {
+//        if (err) throw err; 
+//        res.send({ 'success': 'true' })
+//    });
+//});
 
 app.get('/api/testpostpush', function (req, res) {
 
@@ -100,6 +100,18 @@ app.get('/api/create-user', function(req, res) {
       });
 });
 
+// Adds upvote points to employee database
+app.get('/api/add-points', function (req, res) {
+    console.log(req.query)
+    let q = req.query
+    let queryString = `UPDATE employees SET totalVotes = totalVotes + ${q.points} WHERE employeeID = ${q.id}`
+    console.log(queryString)
+    con.query(queryString, function (err, result, fields) {
+        if (err) throw err;
+        res.send({ 'success': 'true' })
+    });
+})
+
 app.get('/api/get-items', function(req, res) {
 
     con.query('select * from posts', function (err, result, fields) {
@@ -109,19 +121,19 @@ app.get('/api/get-items', function(req, res) {
 });
 
 
-app.get('/api/checkout-item', function (req, res) {
+//app.get('/api/checkout-item', function (req, res) {
 
-    console.log(req.query)
-    let q = req.query
-    console.log(q)
-    let queryString = `UPDATE ITEM SET available = 0, renter_id = '${q.renter_id}' WHERE item_id = '${q.item_id}'`
-    console.log(queryString)
-    con.query(queryString, function (err, result, fields) {
+//    console.log(req.query)
+//    let q = req.query
+//    console.log(q)
+//    let queryString = `UPDATE ITEM SET available = 0, renter_id = '${q.renter_id}' WHERE item_id = '${q.item_id}'`
+//    console.log(queryString)
+//    con.query(queryString, function (err, result, fields) {
 
-        if (err) throw err;
-        res.send(result)
-    });
-});
+//        if (err) throw err;
+//        res.send(result)
+//    });
+//});
 
 
 app.get('/app/addAPost', function(req, res) {
@@ -145,8 +157,6 @@ app.get('/api/postComment', function(req, res) {
 
 
 app.get('/api/getuserinfo', function (req, res) {
-
-   
     let queryString = `SELECT * FROM USER`
     console.log(queryString)
     con.query(queryString, function (err, result, fields) {
@@ -161,6 +171,8 @@ app.get('/api/upvote', function (req, res) {
     let queryString1 = `UPDATE posts set voteCount = ${Number(req.query.itemCount) + 1} where postID = ${req.query.postId};`; 
     let queryString2 = `INSERT into votecheck (u_id, p_id, up_or_down) VALUES (${req.query.userId}, ${req.query.postId}, 'up');`
     console.log(queryString1)
+    // Adds points to employee's vote count
+    // addEmployeePoints(1, req.query.userId)
     con.query(queryString1, function (err, result, fields) {
         if (err) throw err;
         con.query(queryString2, function (err, result, fields) {

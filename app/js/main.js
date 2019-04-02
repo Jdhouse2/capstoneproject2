@@ -40,6 +40,29 @@ function checkAuth() {
     }
 }
 
+// Function to add points to employee database
+function addEmployeePoints(points, id) {
+    let pointObj = {}
+    pointObj.points = points
+    pointObj.id = id
+
+    $.ajax({
+        type: "GET",
+        url: '/api/add-points',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: pointOjb,
+        success: function (msg) {
+            console.log('success')
+            console.log(msg)
+            updateView()
+        },
+        error: function (e) {
+            console.log('failure')
+            console.log(e)
+        }
+    })
+}
 
 
 function generateFlexbox(){

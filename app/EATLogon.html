@@ -57,6 +57,8 @@
                     
                         localStorage.setItem("ownerid", msg[0].employeeID);
                         document.cookie = `ownerid=${msg[0].employeeID}`
+                        localStorage.setItem("modDist", msg[0].modDist);
+                        document.cookie = `modDist=${msg[0].modDist}`
                         window.location.href = "/app/feed.html";
 
                     },

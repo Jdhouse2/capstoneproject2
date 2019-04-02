@@ -120,6 +120,23 @@ app.get('/api/get-items', function(req, res) {
       });
 });
 
+// app.post('/api/mod-remove', function(req, res) {
+
+//     con.query(`DELETE FROM posts `, function (err, result, fields) {
+//         if (err) throw err;
+//         res.send({'success': 'true'})
+//       });
+// });
+
+app.get('/api/mod-remove', function(req, res) {
+    let queryObj = req.query
+    let queryString = `DELETE FROM posts WHERE postID = ('${queryObj.ID}');`
+    con.query(queryString, function (err, result, fields) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+
+    });
+});
 
 //app.get('/api/checkout-item', function (req, res) {
 

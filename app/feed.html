@@ -452,6 +452,72 @@
                     commentArea.id = `${itemObj.postID}-comment-section`
 
 
+                let modRemoveButton = document.createElement('div');
+                    modRemoveButton.classList.add('removeButton');
+                    modRemoveButton.id = `${itemObj.postID}-remove-button`
+                    modRemoveButton.innerHTML = 'Mod Remove'
+
+                    if (localStorage.getItem('modDist') == 0) {
+                        // hide mod remove button
+                        modRemoveButton.style.display = "none";
+
+                    } 
+                    else {
+                        modRemoveButton.addEventListener('click', () => {
+                        let input = document.getElementById(`${itemObj.postID}-remove-comment`)
+
+                        // let value = input.value
+
+                        let dataObj = {
+                            ID: itemObj.postID
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/mod-remove',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: dataObj,
+                            success: function (msg) {
+                                console.log('removed!')
+                                location.reload()
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+
+                    })
+                    }
+
+                    // modRemoveButton.addEventListener('click', () => {
+                    //     let input = document.getElementById(`${itemObj.postID}-remove-comment`)
+
+                    //     // let value = input.value
+
+                    //     let dataObj = {
+                    //         ID: itemObj.postID
+                    //     }
+
+                    //     $.ajax({
+                    //         type: "GET",
+                    //         url: '/api/mod-remove',
+                    //         contentType: "application/json; charset=utf-8",
+                    //         dataType: "json",
+                    //         data: dataObj,
+                    //         success: function (msg) {
+                    //             console.log('removed!')
+                    //             location.reload()
+                    //         },
+                    //         error: function (e) {
+                    //             console.log('failure')
+                    //             console.log(e)
+                    //         }
+                    //     })
+
+                    // })
+
                 arrowContainer.appendChild(upArrow)
                 arrowContainer.appendChild(downArrow)
 
@@ -461,6 +527,7 @@
 
                 inputContainer.appendChild(input)
                 inputContainer.appendChild(inputButton)
+                inputContainer.appendChild(modRemoveButton)
                 
                 commentArea.appendChild(inputContainer)
                 

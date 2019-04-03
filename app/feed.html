@@ -19,60 +19,58 @@
             <p>Community Feed</p>
         </div>
         <div class='feedContainer flex flex-row'>
+            <!-- Any side nav item can attach to this div -->
             <div class='leftNavbar'>
-                <!--<input type="text" id="search" placeholder="Search">
-                <select id='category'>
-                    <option value="category">Category Filter</option>
-                    <option value="IT">Toys</option>
-                    <option value="Cooking">Cooking</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Home Improvement">Home Improvement</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Gardening">Gardening</option>
-                </select>
-                <input type='number' id='zipCode' placeholder='Zip Code'/>-->
+
             </div>
+
+            <!-- Container for the feed -->
             <div class='listContainer'>
+
+                <!-- Only shows if there are no other items shoing  -->
                 <div id='noItems' class='hidden'>
                     Woops! There are no items :(
                 </div>
+
             </div>
 
         </div>
+
         <script>
+            // The global variables that allow for caching of feed data.
+            // Can be used to reference posts without another ajax request.
             let feedState = {
+
+                // List of posts with all post data
                 items: [],
                 itemsObject: {},
+
+                // List of items that the logged in user has voted on.
+                // Exists for a check when loading each post to see if the user has voted on it.
                 votedItems: {},
+
+                // The active accordion. Used to control how many accordions are open.
                 activeId: null,
-                activeChild: null,
             }
 
+            // General function that can be used to implement a filter / tag
+            // Modifies the URL, clears the feed, and reloads the feed only showing
+            // posts that are within that category.
             function changeURL(tag){
                 history.pushState(null, '', `/app/feed.html?tag=${tag}`);
                 clearItems();
 
+                // Sort based on upvotes
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
-                    }).forEach((item) => {
-                        if(item.item_category === tag){
-                            if (!item.childOf) {
-                                addToUi(item)
-                            } else {
-                                addToUi(item, item.childOf)
-                            }
-                        }
-                    })
-            }
-
-            function renderUICategory(dept) {
-                clearItems();
-                feedState.items.sort(function(a, b) {
-                        return b.voteCount - a.voteCount;
-                    }).forEach((item) => {
-                    if(item.postCategory === dept){
+                }).forEach((item) => {
+                    // Loop through the posts only loading those that are part of the category
+                    // TODO render comment even if it is not within the tag
+                    if (item.item_category === tag) {
+                        
+                        // Add the post differently based on whether or not it is a comment
                         if (!item.childOf) {
-                                addToUi(item)
+                            addToUi(item)
                         } else {
                             addToUi(item, item.childOf)
                         }
@@ -80,75 +78,111 @@
                 })
             }
 
+            // General function that can simply be fed a category without changing the URL
+            // Yes, this is very similar to changeURL... oh well :) 
+            function renderUICategory(dept) {
+                clearItems();
+                feedState.items.sort(function(a, b) {
+                        return b.voteCount - a.voteCount;
+                }).forEach((item) => {
+                    if(item.postCategory === dept){
+                        if (!item.childOf) {
+                            addToUi(item)
+                        } else {
+                            addToUi(item, item.childOf)
+                        }
+                    }
+                })
+            }
+
+            // Main function that is called on page load to fetch all of the posts
+            // Gets items, loads them into feedState, gets the votes, and renders UI
             function getItems() {
-                console.log(decodeURIComponent(document.cookie))
+                
+                // Retrieves all of the posts
                 $.ajax({
                     type: "GET",
                     url: '/api/get-items',
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (msg) {
-                        feedState.items = msg;
 
-                        feedState.items.forEach((item) => {
-                            feedState.itemsObject[item.item_id] = {
-                                name: item.item_name,
-                                category: item.item_category,
-                                zip: item.item_zipcode,
-                                desc: item.item_description,
-                                price: item.day_price,
-                                available: item.available,
+                        // This sets the feedState.items to be an array of post objects
+                        feedState.items = msg;
+                        // This sets the feedState.itemsObject to be an object of post objects
+                        // Useful because then data can be accessed via feedState.itemsObject[id]
+                        // for immediate access (rather than looping)
+                        feedState.items.forEach((post) => {
+                            feedState.itemsObject[post.postID] = {
+                                postContent: post.postContent,
+                                department: post.postCategory,
+                                voteCount: post.voteCount,
+                                downVoteCount: post.downVoteCount,
+                                originalPosterId: post.originalPosterID,
+                                childOf: post.childOf,
                             }
                         });
-                        console.log(feedState)
                     },
                     error: function (e) {
+                        // Print if there's an error
                         console.log('failure')
                         console.log(e)
                     }
+                // When we have all the posts, before we load everything, we want to grab the vote counts
                 }).done((msg) => {
-                    $.ajax({
-                            type: "GET",
-                            url: '/api/get-votes',
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            data: {userId: Number(localStorage.getItem("ownerid"))},
-                            success: function (msg) {
 
-                                console.log('success')
-                                msg.forEach((row) => {
-                                    console.log(row)
-                                    feedState.votedItems[`p${row.p_id}`] = {vc_id: row.vc_id, up_or_down: row.up_or_down}
-                                })
-                                console.log(feedState)
-                            },
-                            error: function (e) {
-                                console.log('failure')
-                                console.log(e)
-                            }
-                        }).done((msg) => {
-                            console.log('yoooo')
-                            const urlParams = new URLSearchParams(window.location.search);
-                            if(urlParams.get('tag')) {
-                                clearItems()
-                                renderUICategory(urlParams.get('tag'))  
-                                return;
-                            }
-                            console.log("yo")
-                            console.log(feedState)
-                            feedState.items.sort(function(a, b) {
-                                return b.voteCount - a.voteCount;
-                            }).forEach((item) => {
-                                if (!item.childOf) {
-                                    addToUi(item)
-                                } else {
-                                    addToUi(item, item.childOf)
-                                }
-                                
+                    // Grab vote counts for the specific user logged in
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/get-votes',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: {userId: Number(localStorage.getItem("ownerid"))},
+                        success: function (msg) {
+
+                            // Similar to grabbing the posts and loading them into feed state, this
+                            // does the same thing but for vote count
+                            msg.forEach((row) => {
+                                feedState.votedItems[`p${row.p_id}`] = {vc_id: row.vc_id, up_or_down: row.up_or_down}
                             })
+                        },
+                        error: function (e) {
+                            // Print if there's an error
+                            console.log('failure')
+                            console.log(e)
+                        }
+                    }).done((msg) => {
+                        // Once all that is done, load the UI
+                        // Check to see if there is a filter active in the URL
+                        // First, grab all the query parameters
+                        const urlParams = new URLSearchParams(window.location.search);
+
+                        // If a tag is present, load only that tag
+                        if(urlParams.get('tag')) {
+                            clearItems()
+                            renderUICategory(urlParams.get('tag'))  
+                            return;
+                        }
+
+                        // If there is no tag, sort the posts by upvotes and load all of the
+                        // posts.
+                        feedState.items.sort(function(a, b) {
+                            return b.voteCount - a.voteCount;
+                        }).forEach((post) => {
+                            // If childOf is "Truthy" we want to load it as a comment
+                            // Otherwise load it as a post
+                            if (!post.childOf) {
+                                addToUi(post)
+                            } else {
+                                addToUi(post, post.childOf)
+                            }
                         })
                     })
+                })
             }
+
+            // General utility function that can just construct a basic item ID
+            // Pretty sure this isn't used anymore, but might as well keep it just in case
             function makeItemObj() {
                 let item_id = document.getElementById('item_id').value
                 let renter_id = localStorage.getItem('ownerid')
@@ -157,58 +191,23 @@
                     item_id,
                     renter_id,
                 }
-
             }
 
-            function checkout(itemObj) {
-                $.ajax({
-                    type: "GET",
-                    url: '/api/checkout-item',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: itemObj,
-                    success: function (msg) {
-                        window.location.href = "/app/feed.html";
-                    },
-                    error: function (e) {
-                        console.log('failure')
-                        console.log(e)
-                    }
-                })
-            }
-            function determineHref(category) {
-                switch (category) {
-                    case 'toys':
-                        return './assets/puzzle.png'
-                    case 'Toys':
-                        return './assets/puzzle.png'
-                    case 'Cooking':
-                        return './assets/chef.png'
-                    case 'Electronics':
-                        return './assets/pc.png'
-                    case 'Home Improvement':
-                        return './assets/hammer.png'
-                    case 'Gardening':
-                        return './assets/shovel.png'
-                    case 'Sports':
-                        return './assets/football.png'
-                }
-            }
-
+            // Function that handles the accordion functionality
+            // Shows and hides the accordion, rotates chevron
             function rotate(id, child) {
                 let targetToRotate = document.getElementById(`${id}`)
                 let targetInnerDetails = document.getElementById(`${id}InnerDetails`)
-                console.log(id)
-                console.log(targetToRotate)
                 let chevron
                 
+                // The ID of the chevron changes if it's a post or a comment
                 if (child) {
                     chevron = document.getElementById(`${id}Chevron-t`)
                 } else {
                     chevron = document.getElementById(`${id}Chevron`)
                 }
                 
-
+                // Toggle the necessary classes
                 if (targetToRotate.classList.contains('active')) {
                     targetToRotate.classList.remove('active')
                     chevron.classList.remove('rotate')
@@ -220,40 +219,57 @@
                 }
             }
 
+            // Utility function that resets the feed
+            // Used to clear the container before re-rendering (like when a filter is applied)
             function clearItems(){
                 document.querySelector('.listContainer').innerHTML = ''
             }
 
+            // Function that loads every post and comment
+            // Takes in the item itself as well as the ID of the post
+            // the item is a child of (or is 0 if the item is a post)
             function addToUi(itemObj, childOf) {
+                // Grab the ID of the user who has posted the item
+                let posterId = itemObj.originalPosterID;
+
+                // Grab the feed container
                 let listContainer = document.querySelector('.listContainer')
+                
+                // Make the item container
                 let itemContainer = generateFlexbox()
                 itemContainer.classList.add('item-container')
                 itemContainer.id = itemObj.postID
-                let posterId = itemObj.originalPosterID;
 
+                // Create the header of the post
+                let header = generateFlexbox()
+                header.innerHTML = itemObj.postContent
+                header.classList.add('item-header')
+
+                // Create the body of the post
                 let details = document.createElement('div')
                 details.classList.add('flex')
                 details.classList.add('flex-column')
                 details.classList.add('item-details')
 
-                let header = generateFlexbox()
-                header.innerHTML = itemObj.postContent
-                header.classList.add('item-header')
-
+                // Create the hidden part of the post
                 let innerDetails = generateFlexbox()
                 innerDetails.classList.add('item-inner-details')
                 innerDetails.id = `${itemObj.postID}InnerDetails`
-
+                // Hide it
                 innerDetails.classList.add('hidden')
 
+                // Create the upvote arrow
                 let upArrow = generateFlexbox()
+                    // This is the actual arrow icon
                     upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count' id='ua_${itemObj.postID}'>${itemObj.voteCount}</div>`
                     upArrow.classList.add('up-arrow')
                     upArrow.classList.add('arrow')
 
+                    // Remember when we grabbed the items the user has voted on?
+                    // This uses that data to check if this is one of those items
                     if (feedState.votedItems) {
                         let post_id = `p${itemObj.postID}`
-
+                        // If the user has upvoted this before, add the voted class
                         if (feedState.votedItems[post_id]) {
                             if (feedState.votedItems[post_id].up_or_down === "up") {
                                 upArrow.classList.add('voted')
@@ -261,23 +277,29 @@
                         }
                     }
 
+                    // Event listener that handles the upvote click
                     upArrow.addEventListener("click", () => {
 
+                        // Get the current count
                         let currentCount = itemObj.voteCount
-
+                        // We update may update the UI so the upvote count does not match the state
+                        // If this is the case, trust the UI and not the state
                         if (Number(currentCount) !== Number(document.getElementById(`ua_${itemObj.postID}`).innerHTML)){
                             currentCount = document.getElementById(`ua_${itemObj.postID}`).innerHTML;
                         }
-
+                        
+                        // Create the item we are pushing to the server
                         let postDetails = {
                             postId: itemObj.postID,
                             userId: localStorage.getItem("ownerid"),
                             itemCount: currentCount,
                         }
 
+                        // The arrow will have the "voted" class if the user has already voted
+                        // If this is the class, remove the upvote
                         if (upArrow.classList.contains('voted')) {
-                            
 
+                            // Reduce votecount by 1
                             $.ajax({
                                 type: "GET",
                                 url: '/api/upvote-reset',
@@ -285,11 +307,12 @@
                                 dataType: "json",
                                 data: postDetails,
                                 success: function (msg) {
-                                    addEmployeePoints(1, posterId);
+                                    // On success, update UI
                                     upArrow.classList.remove('voted')
                                     document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+
+                                    // Update state
                                     updateCount('up', 'del', itemObj.postID)
-                                    sort()
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -297,7 +320,7 @@
                                 }
                             })
                         } else {
-                            
+                            // If the user has not upvoted yet, send the update to the server
                             $.ajax({
                                 type: "GET",
                                 url: '/api/upvote',
@@ -305,11 +328,15 @@
                                 dataType: "json",
                                 data: postDetails,
                                 success: function (msg) {
-                                    console.log('ittt worrrked')
+                                    // On success, add points
+                                    addEmployeePoints(1, posterId);
+
+                                    // Update UI
                                     upArrow.classList.add('voted')
                                     document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+
+                                    // Update state
                                     updateCount('up', 'add', itemObj.postID)
-                                    sort()
                                 },
                                 error: function (e) {
                                     console.log('failure')
@@ -319,11 +346,12 @@
                         }
                     })
 
+                // Literally the exact smae as the upvote, just for downvoting.
+                // Maybe those functions should have been combined?
                 let downArrow = generateFlexbox()
                     downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count' id='da_${itemObj.postID}'>${itemObj.downVoteCount}</div>`
                     downArrow.classList.add('down-arrow')
                     downArrow.classList.add('arrow')
-                    
 
                     if (feedState.votedItems) {
                         let post_id = `p${itemObj.postID}`
@@ -335,78 +363,73 @@
                         }
                     }
 
-                    downArrow.addEventListener("click", () => {
+                downArrow.addEventListener("click", () => {
 
-                        let currentDownCount = itemObj.downVoteCount
+                    let currentDownCount = itemObj.downVoteCount
 
-                        if (Number(currentDownCount) !== Number(document.getElementById(`da_${itemObj.postID}`).innerHTML)){
-                            currentDownCount = document.getElementById(`da_${itemObj.postID}`).innerHTML;
-                        }
+                    if (Number(currentDownCount) !== Number(document.getElementById(`da_${itemObj.postID}`).innerHTML)){
+                        currentDownCount = document.getElementById(`da_${itemObj.postID}`).innerHTML;
+                    }
 
-                        let postDetails = {
-                            postId: itemObj.postID,
-                            userId: 1,
-                            itemCount: currentDownCount,
-                        }
+                    let postDetails = {
+                        postId: itemObj.postID,
+                        userId: 1,
+                        itemCount: currentDownCount,
+                    }
 
-                        if (downArrow.classList.contains('voted')) {
+                    if (downArrow.classList.contains('voted')) {
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/downvote-reset',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: postDetails,
+                            success: function (msg) {
+                                downArrow.classList.remove('voted')
+                                document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                updateCount('down', 'del', itemObj.postID)
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+                    } else {
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/downvote',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: postDetails,
+                            success: function (msg) {
+                                downArrow.classList.add('voted')
+                                document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                updateCount('down', 'add', itemObj.postID)
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+                    }
+                })
 
-                            
-
-                            $.ajax({
-                                type: "GET",
-                                url: '/api/downvote-reset',
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                data: postDetails,
-                                success: function (msg) {
-                                    downArrow.classList.remove('voted')
-                                    document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
-                                    updateCount('down', 'del', itemObj.postID)
-                                    sort();
-                                },
-                                error: function (e) {
-                                    console.log('failure')
-                                    console.log(e)
-                                }
-                            })
-                        } else {
-
-                            
-
-                            $.ajax({
-                                type: "GET",
-                                url: '/api/downvote',
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                data: postDetails,
-                                success: function (msg) {
-                                    downArrow.classList.add('voted')
-                                    document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
-                                    updateCount('down', 'add', itemObj.postID)
-                                    sort();
-                                },
-                                error: function (e) {
-                                    console.log('failure')
-                                    console.log(e)
-                                }
-                            })
-                        }
-                    })
-
+                // Create the home for the arrows
                 let arrowContainer = document.createElement('div')
                     arrowContainer.classList.add('arrowContainer')
 
-                
-                let description = generateFlexbox()
-                    description.classList.add('item-desc')
-                    description.innerHTML = `Category: ${itemObj.postCategory}`
-                    description.classList.add('item-detail-cell')
+                // Create the category container
+                let category = generateFlexbox()
+                    category.classList.add('item-desc')
+                    category.innerHTML = `Category: ${itemObj.postCategory}`
+                    category.classList.add('item-detail-cell')
 
+                // Create the container for comments
                 let inputContainer = document.createElement('div')
                     inputContainer.classList.add('postComment')
                     inputContainer.id = `${itemObj.postID}-post-container`
                 
+                // Create the input / text area
                 let input = document.createElement('textarea');
                     input.rows = '3'
                     input.cols = '75'
@@ -414,45 +437,51 @@
                     input.classList.add('commentInput')
                     input.id = `${itemObj.postID}-post-comment`
 
+                // Create the submit button
                 let inputButton = document.createElement('div');
                     inputButton.classList.add('commentSubmitButton');
                     inputButton.id = `${itemObj.postID}-post-button`
                     inputButton.innerHTML = 'Comment'
 
-                    inputButton.addEventListener('click', () => {
-                        let input = document.getElementById(`${itemObj.postID}-post-comment`)
-
-                        let value = input.value
-
-                        let dataObj = {
-                            user: localStorage.getItem("ownerid"),
-                            attachTo: itemObj.postID,
-                            post: value
+                // When the submit button is clicked, submit the comment
+                inputButton.addEventListener('click', () => {
+                    // Grab the input component
+                    let input = document.getElementById(`${itemObj.postID}-post-comment`)
+                    // Grab the input's value
+                    let value = input.value
+                    // Create the comment object
+                    let dataObj = {
+                        user: localStorage.getItem("ownerid"),
+                        attachTo: itemObj.postID,
+                        post: value
+                    }
+                    // Send the comment to the server
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/postComment',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: dataObj,
+                        success: function (msg) {
+                            // On sucess, reload to update the UI
+                            // Maybe create a way not to need to reload?
+                            console.log('posted!')
+                            location.reload()
+                        },
+                        error: function (e) {
+                            console.log('failure')
+                            console.log(e)
                         }
-
-                        $.ajax({
-                            type: "GET",
-                            url: '/api/postComment',
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            data: dataObj,
-                            success: function (msg) {
-                                console.log('posted!')
-                                location.reload()
-                            },
-                            error: function (e) {
-                                console.log('failure')
-                                console.log(e)
-                            }
-                        })
-
                     })
 
+                })
+                
+                // Create element where comments appear
                 let commentArea = document.createElement('div');
                     commentArea.classList.add('commentSection');
                     commentArea.id = `${itemObj.postID}-comment-section`
 
-
+                // Creates the button to remove posts
                 let modRemoveButton = document.createElement('div');
                     modRemoveButton.classList.add('removeButton');
                     modRemoveButton.id = `${itemObj.postID}-remove-button`
@@ -480,7 +509,6 @@
                             dataType: "json",
                             data: dataObj,
                             success: function (msg) {
-                                console.log('removed!')
                                 location.reload()
                             },
                             error: function (e) {
@@ -519,67 +547,23 @@
 
                     // })
 
-                arrowContainer.appendChild(upArrow)
-                arrowContainer.appendChild(downArrow)
-
-                if (!childOf) {
-                    arrowContainer.appendChild(description)  
-                }
-
-                inputContainer.appendChild(input)
-                inputContainer.appendChild(inputButton)
-                inputContainer.appendChild(modRemoveButton)
-                
-                commentArea.appendChild(inputContainer)
-                
-                
-                innerDetails.appendChild(arrowContainer)
-                innerDetails.appendChild(commentArea)  
-
-                
-                details.appendChild(header)
-
-                
-                
-
-                details.appendChild(innerDetails)
-
-
+                // Start to create accordion arrow
                 let dropdownIcon = document.createElement('div');
                 dropdownIcon.classList.add('dropdown-icon')
-
+                
+                // Based on whether the arrow belongs to a comment or a post,
+                // assign the id.
                 if (itemObj.childOf) {
                     dropdownIcon.id = `${itemObj.postID}Chevron-t`
                 } else {
                     dropdownIcon.id = `${itemObj.postID}Chevron`
                 }
-                
-
-                // itemContainer.appendChild(picture)
-                itemContainer.appendChild(details)
-                itemContainer.appendChild(dropdownIcon)
-                
-                if (!childOf) {
-                    listContainer.appendChild(itemContainer)
-                } else {
-                    document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
-
-                }
-                
 
                 dropdownIcon.addEventListener('click', (e) => {
                     let targetId = e.target.id.split('C', 1)[0]
                     let childOfId = e.target.id.split('-', 2)[1]
                     if (childOfId) {
-                        if (feedState.activeChild === targetId) {
-                            rotate(targetId, 1)
-                        } else if (feedState.activeChild !== targetId && feedState.activeChild !== null) {
-                            rotate(feedState.activeChild, 1)
-                            rotate(targetId, 1)
-                        } else if (feedState.activeChild === null) {
-                            rotate(targetId, 1)
-                        }
-
+                        rotate(targetId, 1)
                     } else {
                         if (feedState.activeId === targetId) {
                             rotate(targetId)
@@ -595,10 +579,39 @@
                     }
                 })
 
-            }
+            /// Start to attach elements to each other (note that the order is specific)
+                arrowContainer.appendChild(upArrow)
+                arrowContainer.appendChild(downArrow)
+                // If childOf is "Truthy", we do not want to add a category
+                if (!childOf) {
+                    arrowContainer.appendChild(category)  
+                }
 
+                inputContainer.appendChild(input)
+                inputContainer.appendChild(inputButton)
+                inputContainer.appendChild(modRemoveButton)
+                
+                commentArea.appendChild(inputContainer)
+                
+                innerDetails.appendChild(arrowContainer)
+                innerDetails.appendChild(commentArea)  
+                
+                details.appendChild(header)
+                details.appendChild(innerDetails)
+
+                itemContainer.appendChild(details)
+                itemContainer.appendChild(dropdownIcon)
+                
+                // Append item to a specific container depend on whether it is a post or a comment
+                if (!childOf) {
+                    listContainer.appendChild(itemContainer)
+                } else {
+                    document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                }
+            } // Added to the UI!
+
+            // Utility function that updates the state vote count
             function updateCount(countType, addOrDel, id) { 
-                console.log('c', countType, 'addD', addOrDel, 'id', id)
                 for (let i = 0; i < feedState.items.length; i++) {
                     if (feedState.items[i].postID === id) {
                         console.log('item', feedState.items[i], 'c', countType, 'addD', addOrDel)
@@ -618,123 +631,16 @@
                     }
                 }
             }
-
-            function sort() {
-                console.log('hello!')
-                console.log(feedState)
-            }
-
-            function attachSearchfilter(){
-                document.getElementById('search').addEventListener('keyup', (e) => {
-                    let item = e.target.value
-                    let showingSomethingFlag = false
-
-                    feedState.items.forEach((specificItem) => {
-                        let row = document.getElementById(`${specificItem.item_id}`)
-                        let itemName = `${specificItem.item_name}`
-
-                        if (!itemName.includes(item)) {
-                            if (!row.classList.contains('sHidden')) {
-                                row.classList.add('sHidden')
-                            }
-                        } else {
-                            showingSomethingFlag = true
-                            if (row.classList.contains('sHidden')) {
-                                row.classList.remove('sHidden')
-                            }
-                        }
-                    })
-
-                    if(!showingSomethingFlag){
-                        if(document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.remove('hidden')
-                        }
-                    } else {
-                        if(!document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.add('hidden')
-                        }
-                    }
-                })
-            }
-
-            function attachZipFilterEvent(){
-                document.getElementById('zipCode').addEventListener('keyup', (e) => {
-                    let zip = e.target.value
-                    let showingSomethingFlag = false
-
-                    feedState.items.forEach((item) => {
-                        let row = document.getElementById(`${item.item_id}`)
-                        let zipcode = `${item.item_zipcode}`
-
-                        checkoutButton.addEventListener('click', (e) => {
-                            checkout(makeItemObj())
-                        })
-                        if (!zipcode.includes(zip)) {
-                            if (!row.classList.contains('zHidden')) {
-                                row.classList.add('zHidden')
-                            }
-                        } else {
-                            showingSomethingFlag = true
-                            if (row.classList.contains('zHidden')) {
-                                row.classList.remove('zHidden')
-                            }
-                        }
-                    })
-
-                    if(!showingSomethingFlag){
-                        if(document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.remove('hidden')
-                        }
-                    } else {
-                        if(!document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.add('hidden')
-                        }
-                    }
-                })
-            }
-
-            function attachCategoryFilterEvent(){
-
-                document.getElementById('category').addEventListener('change', (e) => {
-                    let category = e.target.value
-                    let showingSomethingFlag = false
-                    
-                    feedState.items.forEach((item) => {
-                        let row = document.getElementById(`${item.item_id}`)
-                        let rowCategory = item.item_category
-
-                        if (category !== rowCategory && category !== 'category') {
-                            if (!row.classList.contains('ctgHidden')) {
-                                row.classList.add('ctgHidden')
-                            }
-                        } else if(category === rowCategory || category === 'category') {
-                            showingSomethingFlag = true
-                            if (row.classList.contains('ctgHidden')) {
-                                row.classList.remove('ctgHidden')
-                            }
-                        } 
-                    })
-
-                    if(!showingSomethingFlag){
-                        if(document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.remove('hidden')
-                        }
-                    } else {
-                        if(!document.getElementById('noItems').classList.contains('hidden')){
-                            document.getElementById('noItems').classList.add('hidden')
-                        }
-                    }
-                })
-            }
-
+            
+            // Function that handles initing the feed page
             function initFeed() {
                 getItems()
-                // attachZipFilterEvent()
-                // attachCategoryFilterEvent()
-                // attachSearchfilter()
             }
 
+            // Init all global JavaScript
             init()
+
+            // Init all feed JavaScript
             initFeed()
         </script>
     </body>

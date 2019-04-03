@@ -19,60 +19,58 @@
             <p>Community Feed</p>
         </div>
         <div class='feedContainer flex flex-row'>
+            <!-- Any side nav item can attach to this div -->
             <div class='leftNavbar'>
-                <!--<input type="text" id="search" placeholder="Search">
-                <select id='category'>
-                    <option value="category">Category Filter</option>
-                    <option value="IT">Toys</option>
-                    <option value="Cooking">Cooking</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Home Improvement">Home Improvement</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Gardening">Gardening</option>
-                </select>
-                <input type='number' id='zipCode' placeholder='Zip Code'/>-->
+
             </div>
+
+            <!-- Container for the feed -->
             <div class='listContainer'>
+
+                <!-- Only shows if there are no other items shoing  -->
                 <div id='noItems' class='hidden'>
                     Woops! There are no items :(
                 </div>
+
             </div>
 
         </div>
+
         <script>
+            // The global variables that allow for caching of feed data.
+            // Can be used to reference posts without another ajax request.
             let feedState = {
+
+                // List of posts with all post data
                 items: [],
                 itemsObject: {},
+
+                // List of items that the logged in user has voted on.
+                // Exists for a check when loading each post to see if the user has voted on it.
                 votedItems: {},
+
+                // The active accordion. Used to control how many accordions are open.
                 activeId: null,
-                activeChild: null,
             }
 
+            // General function that can be used to implement a filter / tag
+            // Modifies the URL, clears the feed, and reloads the feed only showing
+            // posts that are within that category.
             function changeURL(tag){
                 history.pushState(null, '', `/app/feed.html?tag=${tag}`);
                 clearItems();
 
+                // Sort based on upvotes
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
-                    }).forEach((item) => {
-                        if(item.item_category === tag){
-                            if (!item.childOf) {
-                                addToUi(item)
-                            } else {
-                                addToUi(item, item.childOf)
-                            }
-                        }
-                    })
-            }
-
-            function renderUICategory(dept) {
-                clearItems();
-                feedState.items.sort(function(a, b) {
-                        return b.voteCount - a.voteCount;
-                    }).forEach((item) => {
-                    if(item.postCategory === dept){
+                }).forEach((item) => {
+                    // Loop through the posts only loading those that are part of the category
+                    // TODO render comment even if it is not within the tag
+                    if (item.item_category === tag) {
+                        
+                        // Add the post differently based on whether or not it is a comment
                         if (!item.childOf) {
-                                addToUi(item)
+                            addToUi(item)
                         } else {
                             addToUi(item, item.childOf)
                         }
@@ -80,8 +78,28 @@
                 })
             }
 
+            // General function that can simply be fed a category without changing the URL
+            // Yes, this is very similar to changeURL... oh well :) 
+            function renderUICategory(dept) {
+                clearItems();
+                feedState.items.sort(function(a, b) {
+                        return b.voteCount - a.voteCount;
+                }).forEach((item) => {
+                    if(item.postCategory === dept){
+                        if (!item.childOf) {
+                            addToUi(item)
+                        } else {
+                            addToUi(item, item.childOf)
+                        }
+                    }
+                })
+            }
+
+            // Main function that is called on page load to fetch all of the posts
+            // Gets items, loads them into feedState, gets the votes, and renders UI
             function getItems() {
-                console.log(decodeURIComponent(document.cookie))
+                
+                // Retrieves all of the posts
                 $.ajax({
                     type: "GET",
                     url: '/api/get-items',
@@ -571,15 +589,7 @@
                     let targetId = e.target.id.split('C', 1)[0]
                     let childOfId = e.target.id.split('-', 2)[1]
                     if (childOfId) {
-                        if (feedState.activeChild === targetId) {
-                            rotate(targetId, 1)
-                        } else if (feedState.activeChild !== targetId && feedState.activeChild !== null) {
-                            rotate(feedState.activeChild, 1)
-                            rotate(targetId, 1)
-                        } else if (feedState.activeChild === null) {
-                            rotate(targetId, 1)
-                        }
-
+                        rotate(targetId, 1)
                     } else {
                         if (feedState.activeId === targetId) {
                             rotate(targetId)

@@ -52,7 +52,7 @@ function addEmployeePoints(points, id) {
         url: '/api/add-points',
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        data: pointOjb,
+        data: pointObj,
         success: function (msg) {
             console.log('success')
             console.log(msg)

@@ -229,6 +229,7 @@
                 let itemContainer = generateFlexbox()
                 itemContainer.classList.add('item-container')
                 itemContainer.id = itemObj.postID
+                let posterId = itemObj.originalPosterID;
 
                 let details = document.createElement('div')
                 details.classList.add('flex')
@@ -284,7 +285,7 @@
                                 dataType: "json",
                                 data: postDetails,
                                 success: function (msg) {
-                                    
+                                    addEmployeePoints(1, posterId);
                                     upArrow.classList.remove('voted')
                                     document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
                                     updateCount('up', 'del', itemObj.postID)

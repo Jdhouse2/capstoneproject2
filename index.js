@@ -15,6 +15,7 @@ const path = require('path');
 var http = require('http');
 var mysql = require('mysql');
 var bodyParser = require('body-parser')
+var nodemailer = require('nodemailer');
 
 app.use(express.static(__dirname));
 
@@ -24,6 +25,21 @@ var con = mysql.createConnection({
     password: "!!Cis440",
     database: 'prometheandb'
   });
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'prometheansolutions440@gmail.com',
+      pass: 'cis440email!'
+    }
+});
+
+var mailOptions = {
+    from: 'prometheansolutions440@gmail.com',
+    to: 'jabingh1@asu.edu',
+    subject: 'Sending Email using Node.js',
+    text: 'That was easy!'
+  };
   
 
 // parse application/json
@@ -116,7 +132,15 @@ app.get('/api/get-items', function(req, res) {
 
     con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;
-        res.send(result)
+        let r = result;
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response + 'hey' + r);
+            }
+          });
       });
 });
 

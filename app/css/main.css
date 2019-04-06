@@ -340,3 +340,81 @@ input:focus {
     transform: rotate(180deg);
 }
 
+#resetContent {
+    width: 100vw;
+    height: 95vh;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+#resetContainer, #confirmContainer {
+    width: 25vw;
+    height: 200px;
+    background-color: rgba(0, 204, 102, .5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.hide {
+    display: none !important;
+}
+
+.confirmButton {
+    background-color: rgba(0, 0, 204, 0.5);
+    height: 35px;
+    width: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin: 0 20px;
+}
+
+#inputContainer {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 60%;
+    width: 80%;
+}
+
+#inputText {
+    text-align: center;
+    padding: 10px;
+    font-size: 1.4em;
+}
+
+#emailInput {
+    width: 100%;
+    font-size: 1.2em;
+    border-radius: 10px;
+    border: none;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px #FFF, 0 1px 0 #FFF;
+    padding: 5px 10px;
+}
+
+#submitContainer {
+    flex: 1 0 40%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+#submitRecoveryEmail {
+    background-color: rgba(0, 0, 204, 0.5);
+    height: 35px;
+    width: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+
+

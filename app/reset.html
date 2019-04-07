@@ -21,7 +21,7 @@
     <div id='resetContent'>
         <div id='resetContainer'>
             <div id='inputContainer'>
-                    <div id='inputText'>What is your email address?</div>
+                    <div id='inputText'>Please enter your email or username.</div>
                     <div><input type='email' id='emailInput'/></div>
             </div>
             <div id='submitContainer'>
@@ -43,9 +43,29 @@
     <script>
         function submitEmail(){
             let resetContainer = document.getElementById('resetContainer')
+            let textInput = document.getElementById('emailInput')
+            let email = textInput.value
             resetContainer.classList.add('hide')
             document.getElementById('confirmContainer').classList.remove('hide')
-            let email = resetContainer.value
+
+            $.ajax({
+                    type: "GET",
+                    url: '/api/password-reset',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {inputValue: email},
+                    success: function (msg) {
+                        console.log(msg)
+                    
+                    },
+                    error: function (e) {
+                        // Print if there's an error
+                        console.log('failure')
+                        console.log(e)
+                    }
+                // When we have all the posts, before we load everything, we want to grab the vote counts
+                })
+            
             console.log('the value is', email);
         }
 

@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Community</title>
+    <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+    <link rel='stylesheet' href='./css/login.css' type='text/css'>
+    <link rel='stylesheet' href='./css/main.css' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <script src='./js/login.js'></script>
+    <script src='./js/main.js'></script>
+
+    <style type="text/css">
+      #login-body {padding: 10% 40%;}
+    </style>
+
+  </head>
+
+  <body>
+    <div id='nav'></div>
+    <div id='resetContent'>
+        <div id='resetContainer'>
+            <div id='inputContainer'>
+                    <div id='inputText'>Thank you for verifying! Please enter your new password below.</div>
+                    <div><input type='password' id='p1'/></div>
+                    <div><input type='password' id='p2' placeholder="Confirm Password"/></div>
+            </div>
+            <div id='submitContainer'>
+                <div id='submitRecoveryEmail' onClick='submitPasswordChange()'>Submit</div>
+            </div>
+        </div>
+    </div>
+      
+
+    <script>
+        function submitPasswordChange() {
+            let passwordOne = document.getElementById('p1').value
+            let passwordTwo = document.getElementById('p2').value
+
+            if (passwordOne !== passwordTwo) {
+                let error = document.createElement('div')
+                    error.classList.add('error')
+                    error.id ='errorMessage'
+                error.innerHTML = 'Woops! Passwords do not match';
+                document.getElementById('resetContainer').appendChild(error)
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let code = urlParams.get('code')
+
+             $.ajax({
+                type: "GET",
+                url: '/api/change-password',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {dbCode: code, password: passwordTwo},
+                success: function (msg) {
+                    localStorage.setItem("ownerid", msg[0].employeeID);
+                    document.cookie = `ownerid=${msg[0].employeeID}`
+                    localStorage.setItem("modDist", msg[0].modDist);
+                    document.cookie = `modDist=${msg[0].modDist}`
+                    window.location.href = "/app/feed.html";
+                },
+                error: function (e) {
+                    // Print if there's an error
+                    console.log('failure')
+                    console.log(e)
+                }
+            })
+
+        }
+        init()
+    </script>
+  </body>
+</html>

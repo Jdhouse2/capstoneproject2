@@ -373,6 +373,7 @@ input:focus {
     font-size: 1.1em;
     cursor: pointer;
     margin: 0 20px;
+    color: white;
 }
 
 #inputContainer {
@@ -414,6 +415,7 @@ input:focus {
     align-items: center;
     font-size: 1.1em;
     cursor: pointer;
+    color: white;
 }
 
 

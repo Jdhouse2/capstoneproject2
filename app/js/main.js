@@ -26,7 +26,7 @@ function checkAuth() {
         document.querySelectorAll("a[href='feed.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='logout.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='AddAnItem.html']")[0].style.display = "none";
-        document.querySelectorAll("a[href='myaccount.html']")[0].style.display = "none";
+        document.querySelectorAll("a[href='AccountPage.html']")[0].style.display = "none";
         document.querySelectorAll("a[href='feed.html?tag=Finance']")[0].style.display = "none";
         document.querySelectorAll("a[href='feed.html?tag=Marketing']")[0].style.display = "none";
         document.querySelectorAll("a[href='feed.html?tag=IT']")[0].style.display = "none";

@@ -15,6 +15,8 @@ const path = require('path');
 var http = require('http');
 var mysql = require('mysql');
 var bodyParser = require('body-parser')
+var nodemailer = require('nodemailer');
+const uuidv4 = require('uuid/v4');
 
 app.use(express.static(__dirname));
 
@@ -24,6 +26,15 @@ var con = mysql.createConnection({
     password: "!!Cis440",
     database: 'prometheandb'
   });
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'prometheansolutions440@gmail.com',
+      pass: 'cis440email!'
+    }
+});
+
   
 
 // parse application/json
@@ -100,6 +111,39 @@ app.get('/api/create-user', function(req, res) {
       });
 });
 
+app.get('/api/password-reset', function(req, res) {
+
+    console.log(req.query)
+    let q = req.query
+    let queryString = `SELECT * FROM employees where email = '${q.inputValue}' or username = '${q.inputValue}';`
+    console.log(queryString)
+    con.query(queryString, function (err, result, fields) {
+        if (err) throw err;
+        let id = uuidv4()
+        let idQuery = `INSERT INTO passwordreset (user, resetCode) VALUES ('${q.inputValue}', '${id}')`
+        con.query(idQuery, function (err, result2, fields) {
+            console.log(result2)
+            var mailOptions = {
+                from: 'prometheansolutions440@gmail.com',
+                to: result[0].email,
+                subject: 'Password Reset',
+                html: `<h1>Hi!</h1> <p>You asked for a password reset. Please visit <a href="localhost:8000/app/code-reset.html?code=${id}">localhost:8000/app/code-reset.html?code=${id}</a> to reset your password.</p>`
+            };
+
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                    console.log('email sent!')
+                }
+              });
+              
+            res.send({'success': 'true'})
+        });
+        
+      });
+});
+
 // Adds upvote points to employee database
 app.get('/api/add-points', function (req, res) {
     console.log(req.query)
@@ -116,6 +160,7 @@ app.get('/api/get-items', function(req, res) {
 
     con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;
+        let r = result;
         res.send(result)
       });
 });
@@ -259,6 +304,32 @@ app.get('/api/verify-user', function(req, res) {
         if (err) throw err;
         console.log(result)
         res.send(result)
+      });
+});
+
+
+app.get('/api/change-password', function(req, res) {
+
+    console.log(req.query)
+    let q = req.query
+    console.log(q)
+    let queryString = `SELECT * FROM passwordreset WHERE resetCode = '${q.dbCode}';`
+    console.log(queryString)
+    con.query(queryString, function (err, result, fields) {
+
+        let passwordUpdate = `UPDATE employees SET password = ${q.password} where username = '${result[0].user}' or email = '${result[0].user}';`
+        con.query(passwordUpdate, function (err, result2, fields) {
+
+            let loginQuery =  `SELECT * FROM EMPLOYEES WHERE (username = '${result[0].user}' or email = '${result[0].user}' ) and password = '${q.password}'`
+
+            con.query(loginQuery, function (err, result3, fields) {
+                if (err) throw err;
+                console.log(result3)
+                res.send(result3)
+            });
+
+        });
+        
       });
 });
 

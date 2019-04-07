@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Community</title>
+    <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+    <link rel='stylesheet' href='./css/login.css' type='text/css'>
+    <link rel='stylesheet' href='./css/main.css' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <script src='./js/login.js'></script>
+    <script src='./js/main.js'></script>
+
+    <style type="text/css">
+      #login-body {padding: 10% 40%;}
+    </style>
+
+  </head>
+
+  <body>
+    <div id='nav'></div>
+    <div id='resetContent'>
+        <div id='resetContainer'>
+            <div id='inputContainer'>
+                    <div id='inputText'>Please enter your email or username.</div>
+                    <div><input type='email' id='emailInput'/></div>
+            </div>
+            <div id='submitContainer'>
+                <div id='submitRecoveryEmail' onClick='submitEmail()'>Submit</div>
+            </div>
+        </div>
+        <div id='confirmContainer' class='hide'>
+            <div id='inputContainer'>
+                <div id='inputText'>Thank you! If we have your email on record we have sent a reset link.</div>
+            </div>
+            <div id='submitContainer'>
+                <div class='confirmButton' onClick='toLogin()'>Back to Login</div>
+                <div class='confirmButton' onClick='tryAgain()'>Try Again</div>
+            </div>
+        </div>
+    </div>
+      
+
+    <script>
+        function submitEmail(){
+            let resetContainer = document.getElementById('resetContainer')
+            let textInput = document.getElementById('emailInput')
+            let email = textInput.value
+            resetContainer.classList.add('hide')
+            document.getElementById('confirmContainer').classList.remove('hide')
+
+            $.ajax({
+                    type: "GET",
+                    url: '/api/password-reset',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {inputValue: email},
+                    success: function (msg) {
+                        console.log(msg)
+                    
+                    },
+                    error: function (e) {
+                        // Print if there's an error
+                        console.log('failure')
+                        console.log(e)
+                    }
+                // When we have all the posts, before we load everything, we want to grab the vote counts
+                })
+            
+            console.log('the value is', email);
+        }
+
+        function tryAgain(){
+            let resetContainer = document.getElementById('resetContainer')
+            document.getElementById('resetContainer').classList.remove('hide')
+            document.getElementById('confirmContainer').classList.add('hide')
+        }
+
+        function toLogin(){
+            window.location = '/app/EATLogon.html'
+        }
+        init()
+    </script>
+  </body>
+</html>

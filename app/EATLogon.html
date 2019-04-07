@@ -29,6 +29,7 @@
           <input type="password" placeholder="Enter Password" name="password" id='passwordValue'><br><br>
 
           <button type="submit"onClick="validateUser(this.Form)" id="loginButton">Login</button><br><br>
+          <button onClick="resetPassword()">Forgot Password</button><br><br>
         </div>
       </div>
       
@@ -68,6 +69,10 @@
                     }
                 })
               
+            }
+            function resetPassword(){
+                console.log('moving')
+                window.location = '/app/reset.html'
             }
             document.getElementById('loginButton').addEventListener('click', (e) => {
                 validateUser(makeUserObj())

@@ -1,15 +1,24 @@
 #homeContainer {
     width: 75vw;
     background-image: url('../assets/team.jpg');
-    height: 97vh;
-    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    height: 95vh;
 }
 
 #home-right-column {
-    background-color: rgba(0, 204, 102, .7);
-    width: 15vw;
+    background-color: rgba(93,183,222,0.7);
+
+    width: 70vw;
+    height: 25vh;
+    margin: auto;
+    margin-top: 20vw;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
 }
+
 
 #home-content {
     align-items: stretch;
@@ -18,18 +27,22 @@
 
 #home-column {
     justify-content: center;
-    
 }
 
 #home-heading {
     border-bottom: 1px solid white;
     text-align: center;
     padding-bottom: 20px;
+    color: black;
+}
+#home-heading .heading{
+    color:black;
+    text-shadow: 2px 2px 3px #FFFFFF;
 }
 
 #home-subtitle {
     text-align: left;
-    margin-left: 15%;
+    margin: auto;
 }
 
 #home-content {

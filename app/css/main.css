@@ -7,6 +7,7 @@
 #body {
     display: flex;
     justify-content: center;
+    background-color: #F2F3AE;
 }
 
 .flex {
@@ -88,32 +89,38 @@
 
 .leftNavbar {
     height: 80vh;
-    margin: 5vh 2.5vw 5vh 10vw;
-    max-width: 15vw;
-    border: 1.5px solid rgba(0, 0, 204, 0.7);
+    margin: 5vh 2.5vw 5vh 5vw;
+    max-width: 20vw;
+    border: 1px solid #3B7080;
     flex: 1 0 auto;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
 }
 
+.feedContainer {
+    background-color: #E4FDE1;
+}
+
 .listContainer {
     height: fit-content;
     max-height: 80vh;
     max-width: 60vw;
-    margin: 5vh 10vw 5vh 2.5vw;
-    border: 1.5px solid rgba(0, 0, 204, 0.7);
+    margin: 5vh 5vw 5vh 2.5vw;
     flex: 1 0 auto;
     border-radius: 10px;
     overflow-x: auto;
 }
 .item-container {
-    border: 1px solid grey;
+    border: 1px solid #3B7080;
+    border-radius: 5px;
     flex: 1 0 100%;
     align-items: center;
-
     height: 7vw;
     transition: height 1.4s, min-height 1.4s;
+    background-color: #F2F3AE;
+    margin-bottom: 5px;
+    font-family: 'Raleway', sans-serif;
 }
 
 .voted {
@@ -121,7 +128,8 @@
 }
 
 .item-container:hover {
-    background-color: rgba(0, 204, 102, .2);
+    background-color: #FCEC52;
+    transition: .5s;
 }
 
 .item-inner-details {
@@ -144,7 +152,7 @@
 
 .commentSubmitButton {
     padding: 10px;
-    background-color: rgba(0, 0, 204, 0.5);
+    background-color: #3B7080;
     color: white;
     cursor: pointer;
 }
@@ -157,7 +165,7 @@
 }
 
 .commentSection {
-    background-color: rgba(0, 204, 102, .5);
+    
     width: 100%;
     padding: 10px 25px;
 }
@@ -192,16 +200,21 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-color: #5DB7DE;
+    border-radius: 15px;
     margin: 10px;
+    padding: 15px;
     cursor: pointer;
-
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
+    .dropdown-icon:hover {
+        box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+    }
 
 .active {
     max-height: 100vh;
     height: fit-content;
     align-items: flex-start;
-    background-color: rgba(0, 204, 102, .2);
 }
 
 .rotate {
@@ -219,12 +232,12 @@
 
 #pageHeading {
     height: 10vh;
-    padding: 5px;
-    padding-top: 10px;
     font-size: 2vh;
-    background-color: rgba(0, 0, 204, 0.5);
+    background-color: #4DB7DE;
+    box-shadow: inset 0px 0px 2px 0px rgba(0,0,0,1);
 }
 #pageHeading p {
+    padding: 10px;
     font-size: 4vh;
     text-align: center;
     font-family: 'Raleway', sans-serif;
@@ -416,6 +429,10 @@ input:focus {
     font-size: 1.1em;
     cursor: pointer;
     color: white;
+}
+
+.addAnItem {
+    background-color: #E4FDE1;
 }
 
 

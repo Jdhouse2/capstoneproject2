@@ -1,7 +1,6 @@
 const constants = {
     nav: {
         'Home': 'home.html',
-        'About': 'about.html',
         'All': 'feed.html',
         'Finance': 'feed.html?tag=Finance',
         'IT': 'feed.html?tag=IT',

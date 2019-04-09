@@ -231,8 +231,393 @@
             function addToUi(itemObj, childOf) {
                 // Grab the ID of the user who has posted the item
                 let posterId = itemObj.originalPosterID;
+                let department = itemObj.postCategory;
+                let postID = itemObj.postID;
 
-                // Grab the feed container
+                if(department == 'Announcements'){
+                    // Grab the feed container
+                let listContainer = document.querySelector('.leftNavbar')
+                
+                // Make the item container
+                let itemContainer = generateFlexbox()
+                itemContainer.classList.add('item-container')
+                itemContainer.id = itemObj.postID
+
+                // Create the header of the post
+                let header = generateFlexbox()
+                header.innerHTML = itemObj.postContent
+                header.classList.add('item-header')
+
+                // Create the body of the post
+                let details = document.createElement('div')
+                details.classList.add('flex')
+                details.classList.add('flex-column')
+                details.classList.add('item-details')
+
+                // Create the hidden part of the post
+                let innerDetails = generateFlexbox()
+                innerDetails.classList.add('item-inner-details')
+                innerDetails.id = `${itemObj.postID}InnerDetails`
+                // Hide it
+                innerDetails.classList.add('hidden')
+
+                // Create the upvote arrow
+                let upArrow = generateFlexbox()
+                    // This is the actual arrow icon
+                    upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count' id='ua_${itemObj.postID}'>${itemObj.voteCount}</div>`
+                    upArrow.classList.add('up-arrow')
+                    upArrow.classList.add('arrow')
+
+                    // Remember when we grabbed the items the user has voted on?
+                    // This uses that data to check if this is one of those items
+                    if (feedState.votedItems) {
+                        let post_id = `p${itemObj.postID}`
+                        // If the user has upvoted this before, add the voted class
+                        if (feedState.votedItems[post_id]) {
+                            if (feedState.votedItems[post_id].up_or_down === "up") {
+                                upArrow.classList.add('voted')
+                            }
+                        }
+                    }
+
+                    // Event listener that handles the upvote click
+                    upArrow.addEventListener("click", () => {
+
+                        // Get the current count
+                        let currentCount = itemObj.voteCount
+                        // We update may update the UI so the upvote count does not match the state
+                        // If this is the case, trust the UI and not the state
+                        if (Number(currentCount) !== Number(document.getElementById(`ua_${itemObj.postID}`).innerHTML)){
+                            currentCount = document.getElementById(`ua_${itemObj.postID}`).innerHTML;
+                        }
+                        
+                        // Create the item we are pushing to the server
+                        let postDetails = {
+                            postId: itemObj.postID,
+                            userId: localStorage.getItem("ownerid"),
+                            itemCount: currentCount,
+                        }
+
+                        // The arrow will have the "voted" class if the user has already voted
+                        // If this is the class, remove the upvote
+                        if (upArrow.classList.contains('voted')) {
+
+                            // Reduce votecount by 1
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/upvote-reset',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    // On success, update UI
+                                    upArrow.classList.remove('voted')
+                                    document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+
+                                    // Update state
+                                    updateCount('up', 'del', itemObj.postID)
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        } else {
+                            // If the user has not upvoted yet, send the update to the server
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/upvote',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: postDetails,
+                                success: function (msg) {
+                                    // On success, add points
+                                    addEmployeePoints(1, posterId);
+
+                                    // Update UI
+                                    upArrow.classList.add('voted')
+                                    document.getElementById(`ua_${itemObj.postID}`).innerHTML = msg.count;
+
+                                    // Update state
+                                    updateCount('up', 'add', itemObj.postID)
+                                },
+                                error: function (e) {
+                                    console.log('failure')
+                                    console.log(e)
+                                }
+                            })
+                        }
+                    })
+
+                // Literally the exact smae as the upvote, just for downvoting.
+                // Maybe those functions should have been combined?
+                let downArrow = generateFlexbox()
+                    downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count' id='da_${itemObj.postID}'>${itemObj.downVoteCount}</div>`
+                    downArrow.classList.add('down-arrow')
+                    downArrow.classList.add('arrow')
+
+                    if (feedState.votedItems) {
+                        let post_id = `p${itemObj.postID}`
+
+                        if (feedState.votedItems[post_id]) {
+                            if (feedState.votedItems[post_id].up_or_down === "down") {
+                                downArrow.classList.add('voted')
+                            }
+                        }
+                    }
+
+                downArrow.addEventListener("click", () => {
+
+                    let currentDownCount = itemObj.downVoteCount
+
+                    if (Number(currentDownCount) !== Number(document.getElementById(`da_${itemObj.postID}`).innerHTML)){
+                        currentDownCount = document.getElementById(`da_${itemObj.postID}`).innerHTML;
+                    }
+
+                    let postDetails = {
+                        postId: itemObj.postID,
+                        userId: 1,
+                        itemCount: currentDownCount,
+                    }
+
+                    if (downArrow.classList.contains('voted')) {
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/downvote-reset',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: postDetails,
+                            success: function (msg) {
+                                downArrow.classList.remove('voted')
+                                document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                updateCount('down', 'del', itemObj.postID)
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+                    } else {
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/downvote',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: postDetails,
+                            success: function (msg) {
+                                downArrow.classList.add('voted')
+                                document.getElementById(`da_${itemObj.postID}`).innerHTML = msg.count;
+                                updateCount('down', 'add', itemObj.postID)
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+                    }
+                })
+
+                // Create the home for the arrows
+                let arrowContainer = document.createElement('div')
+                    arrowContainer.classList.add('arrowContainer')
+
+                // Create the category container
+                let category = generateFlexbox()
+                    category.classList.add('item-desc')
+                    category.innerHTML = `Category: ${itemObj.postCategory}`
+                    category.classList.add('item-detail-cell')
+
+                // Create the container for comments
+                let inputContainer = document.createElement('div')
+                    inputContainer.classList.add('postComment')
+                    inputContainer.id = `${itemObj.postID}-post-container`
+                
+                // Create the input / text area
+                let input = document.createElement('textarea');
+                    input.rows = '3'
+                    input.cols = '75'
+                    input.placeholder = 'Write a Comment...'
+                    input.classList.add('commentInput')
+                    input.id = `${itemObj.postID}-post-comment`
+
+                // Create the submit button
+                let inputButton = document.createElement('div');
+                    inputButton.classList.add('commentSubmitButton');
+                    inputButton.id = `${itemObj.postID}-post-button`
+                    inputButton.innerHTML = 'Comment'
+
+                if (localStorage.getItem('pocDist') == 0){
+                    input.style.display = "none";
+                    inputButton.style.display = "none";
+                }
+                // When the submit button is clicked, submit the comment
+                inputButton.addEventListener('click', () => {
+                    // Grab the input component
+                    let input = document.getElementById(`${itemObj.postID}-post-comment`)
+                    // Grab the input's value
+                    let value = input.value
+                    // Create the comment object
+                    let dataObj = {
+                        user: localStorage.getItem("ownerid"),
+                        attachTo: itemObj.postID,
+                        post: value
+                    }
+                    // Send the comment to the server
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/postComment',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: dataObj,
+                        success: function (msg) {
+                            // On sucess, reload to update the UI
+                            // Maybe create a way not to need to reload?
+                            console.log('posted!')
+                            location.reload()
+                        },
+                        error: function (e) {
+                            console.log('failure')
+                            console.log(e)
+                        }
+                    })
+
+                })
+                
+                // Create element where comments appear
+                let commentArea = document.createElement('div');
+                    commentArea.classList.add('commentSection');
+                    commentArea.id = `${itemObj.postID}-comment-section`
+
+                // Creates the button to remove posts
+                let modRemoveButton = document.createElement('div');
+                    modRemoveButton.classList.add('removeButton');
+                    modRemoveButton.id = `${itemObj.postID}-remove-button`
+                    modRemoveButton.innerHTML = 'Mod Remove'
+
+                    if (localStorage.getItem('modDist') == 0 || postID == 47) {
+                        // hide mod remove button
+                        modRemoveButton.style.display = "none";
+
+                    } 
+                    else {
+                        modRemoveButton.addEventListener('click', () => {
+                        let input = document.getElementById(`${itemObj.postID}-remove-comment`)
+
+                        // let value = input.value
+
+                        let dataObj = {
+                            ID: itemObj.postID
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/mod-remove',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: dataObj,
+                            success: function (msg) {
+                                location.reload()
+                            },
+                            error: function (e) {
+                                console.log('failure')
+                                console.log(e)
+                            }
+                        })
+
+                    })
+                    }
+
+                    // modRemoveButton.addEventListener('click', () => {
+                    //     let input = document.getElementById(`${itemObj.postID}-remove-comment`)
+
+                    //     // let value = input.value
+
+                    //     let dataObj = {
+                    //         ID: itemObj.postID
+                    //     }
+
+                    //     $.ajax({
+                    //         type: "GET",
+                    //         url: '/api/mod-remove',
+                    //         contentType: "application/json; charset=utf-8",
+                    //         dataType: "json",
+                    //         data: dataObj,
+                    //         success: function (msg) {
+                    //             console.log('removed!')
+                    //             location.reload()
+                    //         },
+                    //         error: function (e) {
+                    //             console.log('failure')
+                    //             console.log(e)
+                    //         }
+                    //     })
+
+                    // })
+
+                // Start to create accordion arrow
+                let dropdownIcon = document.createElement('div');
+                dropdownIcon.classList.add('dropdown-icon')
+                
+                // Based on whether the arrow belongs to a comment or a post,
+                // assign the id.
+                if (itemObj.childOf) {
+                    dropdownIcon.id = `${itemObj.postID}Chevron-t`
+                } else {
+                    dropdownIcon.id = `${itemObj.postID}Chevron`
+                }
+
+                dropdownIcon.addEventListener('click', (e) => {
+                    let targetId = e.target.id.split('C', 1)[0]
+                    let childOfId = e.target.id.split('-', 2)[1]
+                    if (childOfId) {
+                        rotate(targetId, 1)
+                    } else {
+                        if (feedState.activeId === targetId) {
+                            rotate(targetId)
+                            feedState.activeId = null
+                        } else if (feedState.activeId !== targetId && feedState.activeId !== null) {
+                            rotate(feedState.activeId)
+                            rotate(targetId)
+                            feedState.activeId = targetId
+                        } else if (feedState.activeId === null) {
+                            rotate(targetId)
+                            feedState.activeId = targetId
+                        }
+                    }
+                })
+
+            /// Start to attach elements to each other (note that the order is specific)
+                arrowContainer.appendChild(upArrow)
+                arrowContainer.appendChild(downArrow)
+                // If childOf is "Truthy", we do not want to add a category
+                if (!childOf) {
+                    arrowContainer.appendChild(category)  
+                }
+
+                inputContainer.appendChild(input)
+                inputContainer.appendChild(inputButton)
+                inputContainer.appendChild(modRemoveButton)
+                
+                commentArea.appendChild(inputContainer)
+                
+                innerDetails.appendChild(arrowContainer)
+                innerDetails.appendChild(commentArea)  
+                
+                details.appendChild(header)
+                details.appendChild(innerDetails)
+
+                itemContainer.appendChild(details)
+                itemContainer.appendChild(dropdownIcon)
+                
+                // Append item to a specific container depend on whether it is a post or a comment
+                if (!childOf) {
+                    listContainer.appendChild(itemContainer)
+                } else {
+                    document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                }
+                }
+                else{
+                    // Grab the feed container
                 let listContainer = document.querySelector('.listContainer')
                 
                 // Make the item container
@@ -608,6 +993,8 @@
                 } else {
                     document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
                 }
+                }
+
             } // Added to the UI!
 
             // Utility function that updates the state vote count

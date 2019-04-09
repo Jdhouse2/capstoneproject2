@@ -60,6 +60,8 @@
                         document.cookie = `ownerid=${msg[0].employeeID}`
                         localStorage.setItem("modDist", msg[0].modDist);
                         document.cookie = `modDist=${msg[0].modDist}`
+                        localStorage.setItem("pocDist", msg[0].pocDist);
+                        document.cookie = `pocDist=${msg[0].pocDist}`
                         window.location.href = "/app/feed.html";
 
                     },

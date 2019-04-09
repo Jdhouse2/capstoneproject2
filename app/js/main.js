@@ -34,6 +34,7 @@ function checkAuth() {
     } else {
         console.log(localStorage.getItem("ownerid") + " is signed in");
         console.log(localStorage.getItem("modDist") + " is mod status");
+        console.log(localStorage.getItem("pocDist") + " is poc status");
         // hide irrelevant nav links
         document.querySelectorAll("a[href='EATLogon.html']")[0].style.display = "none";
         // document.querySelectorAll("a[href='signup.html']")[0].style.display = "none";

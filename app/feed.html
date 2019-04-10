@@ -16,7 +16,7 @@
 
         </div>
         <div id='pageHeading'>
-            <p>Community Feed</p>
+            <p id='pageTitle'>Community Feed</p>
         </div>
         <div class='feedContainer flex flex-row'>
             <!-- Any side nav item can attach to this div -->
@@ -66,7 +66,7 @@
                 }).forEach((item) => {
                     // Loop through the posts only loading those that are part of the category
                     // TODO render comment even if it is not within the tag
-                    if (item.item_category === tag) {
+                    if (item.item_category === tag || item.item_category == 'Announcements') {
                         
                         // Add the post differently based on whether or not it is a comment
                         if (!item.childOf) {
@@ -85,7 +85,7 @@
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
                 }).forEach((item) => {
-                    if(item.postCategory === dept){
+                    if(item.postCategory === dept || item.postCategory == 'Announcements'){
                         if (!item.childOf) {
                             addToUi(item)
                         } else {
@@ -160,7 +160,10 @@
                         // If a tag is present, load only that tag
                         if(urlParams.get('tag')) {
                             clearItems()
-                            renderUICategory(urlParams.get('tag'))  
+                            renderUICategory(urlParams.get('tag'))
+                            // Try to change document title
+                            document.getElementById('pageTitle').innerHTML = "Community Feed - " + urlParams.get('tag')
+
                             return;
                         }
 

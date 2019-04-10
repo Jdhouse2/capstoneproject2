@@ -10,13 +10,14 @@
 
 #home-right-column {
     background-color: rgba(93,183,222,0.7);
-
+    border-radius: 10px;
     width: 70vw;
     height: 25vh;
     margin: auto;
     margin-top: 20vw;
     font-family: 'Raleway', sans-serif;
     text-align: center;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
 }
 
 
@@ -30,7 +31,7 @@
 }
 
 #home-heading {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid #5DB7DE;
     text-align: center;
     padding-bottom: 20px;
     color: black;

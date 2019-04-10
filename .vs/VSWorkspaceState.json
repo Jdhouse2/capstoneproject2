@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\app",
+    "\\app\\css",
     "\\app\\js"
   ],
-  "SelectedNode": "\\index.js",
+  "SelectedNode": "\\app\\AccountPage.html",
   "PreviewInSolutionExplorer": false
 }

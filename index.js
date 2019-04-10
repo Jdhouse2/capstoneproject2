@@ -350,7 +350,7 @@ app.get('/api/get-votes', function(req, res) {
 
 app.get('/api/get-posts', function(req, res) {
 
-    con.query('select * from posts;', function (err, result, fields) {
+    con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;
         res.send(result)
       });

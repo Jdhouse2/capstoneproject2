@@ -158,7 +158,7 @@ app.get('/api/add-points', function (req, res) {
 
 app.get('/api/get-items', function(req, res) {
 
-    con.query('select * from posts', function (err, result, fields) {
+    con.query('select * from item', function (err, result, fields) {
         if (err) throw err;
         let r = result;
         res.send(result)

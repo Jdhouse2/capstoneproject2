@@ -352,6 +352,7 @@ app.get('/api/get-posts', function(req, res) {
     console.log("Get posts is running")
     con.query('select * from posts', function (err, result, fields) {
         if (err) throw err;
+        console.log(result)
         res.send(result)
       });
 });

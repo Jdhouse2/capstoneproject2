@@ -71,32 +71,7 @@
                 });
             }
 
-            function getAccountInfo() {
-                $.ajax({
-                    type: "GET",
-                    url: '/api/getempinfo',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (msg) {
-                      
-                        console.log(msg);
-                        var i;
-                        for (i = 0; i < msg.length; i++) {
-                            var thisId = msg[i].id;
-                            console.log(thisId);
-                            if (thisId == localStorage.getItem('originalPosterID')) {
-                                console.log("same id");
-                                var empID = msg[i].employeeID;
-                            }
-                        }
-                    }
-                })
-            }
-
-
-
             init();
-            getAccountInfo();
             getPosts();
 
 	</script>

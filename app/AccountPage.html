@@ -42,9 +42,7 @@
                         var table = document.getElementById("myPosts");
                         for (i = 0; i < msg.length; i++) {
                             var thisOwner = msg[i].originalPosterID;
-                            alert(localStorage.getItem('originalPosterID')+" - "+thisOwner);
-                            if (thisOwner == localStorage.getItem('originalPosterID')) {
-                                alert("in the if");
+                            if (thisOwner == localStorage.getItem("ownerid")) {
                                 var upvotes = msg[i].voteCount;
                                 var downvotes = msg[i].downVoteCount;
                                 var category = msg[i].postCategory;

@@ -71,11 +71,13 @@
             let postCat =   document.getElementById("category1").value;
             let postContent =  document.getElementById("postBody").value;
             let originalPosterID = parseFloat(localStorage.getItem('ownerid'));
+            let modStatus = localStorage.getItem('modDist')
 
             return {
                 originalPosterID,
                 postCat,
-                postContent
+                postContent,
+                modStatus
             }
         }
 

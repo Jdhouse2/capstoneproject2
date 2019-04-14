@@ -417,6 +417,10 @@ input:focus {
     color: white;
 }
 
+.blue {
+    background-color: #4DB7DE !important;
+}
+
 #inputContainer {
     justify-content: center;
     align-items: center;

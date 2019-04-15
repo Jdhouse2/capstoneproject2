@@ -91,7 +91,7 @@ app.get('/api/testpostpush', function (req, res) {
 
     console.log(req.query)
     let q = req.query
-    let queryString = `INSERT INTO posts (originalPosterID, postcategory, voteCount, postContent, downVoteCount) VALUES ("${q.originalPosterID}", "${q.postCat}", 0, "${q.postContent}", 0)`
+    let queryString = `INSERT INTO posts (originalPosterID, postcategory, voteCount, postContent, downVoteCount, isMod) VALUES ("${q.originalPosterID}", "${q.postCat}", 0, "${q.postContent}", 0, "${q.modStatus}")`
     console.log(queryString)
     con.query(queryString, function (err, result, fields) {
         if (err) throw err;
@@ -208,11 +208,18 @@ app.get('/app/addAPost', function(req, res) {
 
 app.get('/api/postComment', function(req, res) {
     let queryObj = req.query
-    let queryString = `INSERT INTO posts (originalPosterID, postCategory, voteCount, postContent, downVoteCount, childOf) values (${queryObj.user}, '', 0, '${queryObj.post}', 0, ${queryObj.attachTo});`
+    console.log(queryObj)
+    let queryString = `INSERT INTO posts (originalPosterID, postCategory, voteCount, postContent, downVoteCount, childOf, isMod) values (${queryObj.user}, '', 0, '${queryObj.post}', 0, ${queryObj.attachTo}, ${queryObj.isMod});`
     con.query(queryString, function (err, result, fields) {
         if (err) throw err;
-        res.send(JSON.stringify(result))
 
+        if (queryObj.isMod) {
+            let updateParent = `UPDATE posts SET modHasCommented = 1 where postID = ${queryObj.attachTo};`;
+            con.query(updateParent, function(err2, result2, fields2) {
+                if(err2) throw err;
+                res.send(JSON.stringify(result))
+            })            
+        }
     });
 });
 

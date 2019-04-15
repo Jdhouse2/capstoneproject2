@@ -46,6 +46,7 @@
                     success: function (msg) {
                         console.log(msg);
                         var table = document.getElementById("myPosts");
+                        var cTable = document.getElementById("myComments");
                         for (i = 0; i < msg.length; i++) {
                             var thisOwner = msg[i].originalPosterID;
                             if (thisOwner == localStorage.getItem("ownerid")) {
@@ -59,6 +60,16 @@
                                 var downvoteCell = row.insertCell(1);
                                 var categoryCell = row.insertCell(2);
                                 var postCell = row.insertCell(3);
+
+                                if (msg[i].childOf) {
+
+                                row = cTable.insertRow(2);
+                                upvoteCell = row.insertCell(0);
+                                downvoteCell = row.insertCell(1);
+                                categoryCell = row.insertCell(2);
+                                postCell = row.insertCell(3);
+
+                                }
 
                                 // Fill Cells
                                 upvoteCell.innerHTML = upvotes;

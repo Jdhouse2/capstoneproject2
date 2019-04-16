@@ -467,5 +467,52 @@ input:focus {
     background-color: #E4FDE1;
 }
 
+.hide{
+    display: none;
+}
+
+#myPosts, #myComments {
+    font-family: 'Raleway', sans-serif;
+    border: 1px solid black;
+    margin: auto;
+    width: 50%;
+    text-align: center;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+    #myPosts th, #myComments th {
+        padding: 3px 3px;
+        background-color: #F2F3AE;
+        width: auto;
+        min-width: 8em;
+        border: 1px solid black;
+    }
+
+#myPosts td, #myComments td{
+    background: #4DB7DE;
+    border-collapse: collapse;
+}
+
+#myPosts td:hover, #myComments td:hover {
+    transition: .5s;
+    background-color: #FCEC52;
+}
+
+h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    padding: 15px;
+    background: grey;
+    width: 100%;
+    background-color: #FCEC52;
+}
+
+h3 {
+    text-align: center;
+    margin: auto;
+    font-family: 'Raleway', sans-serif;
+    padding: 5px;
+}
 
 

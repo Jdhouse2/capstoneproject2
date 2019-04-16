@@ -119,6 +119,8 @@
     border-radius: 10px;
     overflow-x: auto;
 }
+
+
 .item-container {
     border: 1px solid #3B7080;
     border-radius: 5px;
@@ -192,6 +194,10 @@
     width: 4vw;
     height: auto;
     padding: 10px;
+}
+
+.announcement-item-details {
+    max-width: 75%;
 }
 
 .item-details {

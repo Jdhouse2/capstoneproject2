@@ -442,6 +442,33 @@ input:focus {
     font-size: 1.4em;
 }
 
+#login-body h2{
+    width: 100vw;
+    margin: auto;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+#login-body button {
+    text-align: center;
+    width: 50%;
+    margin: auto;
+    padding: 5px;
+    background-color: #4DB7DE;
+}
+.container{
+    margin: auto;
+    width: 20vw;
+    text-align: center;
+    font-size: 20px;
+}
+.container label{
+    width: 5vw;
+}
+.container input{
+    float: right;
+}
+
 #emailInput {
     width: 100%;
     font-size: 1.2em;

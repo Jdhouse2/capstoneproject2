@@ -619,7 +619,10 @@
                     if (!childOf) {
                         listContainer.appendChild(itemContainer)
                     } else {
-                        document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                        try {
+                            document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                        }
+                        catch (err) { console.log("Error adding comment.");}
                     }
                 } else{
                     // Grab the feed container
@@ -1003,7 +1006,12 @@
                     if (!childOf) {
                         listContainer.appendChild(itemContainer)
                     } else {
-                        document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                        try {
+                            document.getElementById(`${childOf}-comment-section`).appendChild(itemContainer)
+                        }
+                        catch (err) {
+                            console.log("Comment didn't post.");
+                        }
                     }
                 }
 

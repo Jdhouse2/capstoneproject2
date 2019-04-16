@@ -195,9 +195,15 @@
     height: auto;
     padding: 10px;
 }
-
+.annoucenement item-container{
+    height: fit-content;
+}
 .announcement-item-details {
-    max-width: 75%;
+    z-index: 0;
+    position: relative;
+}
+.announcement-item-details item-container{
+    display: block !important;
 }
 
 .item-details {

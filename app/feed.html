@@ -642,7 +642,7 @@
                         }
                         catch (err) { console.log("Error adding comment.");}
                     }
-                } else{
+                } else {
                     // Grab the feed container
                     let listContainer = document.querySelector('.listContainer')
                     
@@ -997,6 +997,70 @@
                         }
                     })
 
+                // Create progress area
+                let progressContainer = document.createElement('div')
+                    progressContainer.classList.add('progressContainer')
+
+                let progressInfo = document.createElement('div')
+                    progressInfo.classList.add('progressInfo')
+                
+                if (Number(localStorage.getItem('modDist'))) {
+                    let options = ['In Progress', 'Need More Information', 'Not Currently Feasible', 'On Hold']
+
+                    options.forEach((option) => {
+                        let radioContainer = document.createElement('radioContainer')
+                            radioContainer.id = `${itemObj.postID}-radio-container`
+                            radioContainer.classList.add('radio-container')
+
+                        let inputRadio = document.createElement('input')
+                            inputRadio.id = `${itemObj.postID}-radio-input`
+                            inputRadio.classList.add('statusInput')
+                            inputRadio.name = 'statusInput'
+                            inputRadio.type = 'radio'
+                            inputRadio.value = option
+
+                            if (itemObj.status === option) {
+                                inputRadio.checked = true
+                            }
+
+                            inputRadio.addEventListener('change', (e) => {
+                                let dataObj = {
+                                    value: option,
+                                    id: itemObj.postID,
+                                }
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: '/api/update-status',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    data: dataObj,
+                                    success: function (msg) {
+                                        console.log('updated')
+                                    },
+                                    error: function (e) {
+                                        console.log('failure')
+                                        console.log(e)
+                                    }
+                                })
+                            })
+
+                        let label = document.createElement('label')
+                            label.for = `${itemObj.postID}-radio-input`
+                            label.innerHTML = option
+
+                        radioContainer.appendChild(inputRadio)
+                        radioContainer.appendChild(label)
+
+                        progressInfo.appendChild(radioContainer)
+                    })
+                } else {
+                    if (itemObj.status) {
+                        progressContainer.innerHTML = `Moderator Status: ${itemObj.status}`
+                        progressContainer.classList.add('non-mod')
+                    }
+                }
+
                 /// Start to attach elements to each other (note that the order is specific)
                     arrowContainer.appendChild(upArrow)
                     arrowContainer.appendChild(downArrow)
@@ -1012,8 +1076,14 @@
                     commentArea.appendChild(inputContainer)
                     
                     innerDetails.appendChild(commentArea)  
+
+                    progressContainer.appendChild(progressInfo)
                     
                     details.appendChild(header)
+                    if (!childOf) {
+                        details.appendChild(progressContainer) 
+                    }
+
                     details.appendChild(arrowContainer)
                     details.appendChild(innerDetails)
 

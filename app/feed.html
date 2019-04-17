@@ -84,7 +84,7 @@
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
                 }).forEach((item) => {
-                    if(item.postCategory === dept || item.postCategory == 'Announcements'){
+                    if(item.postCategory === dept || item.postCategory == 'Announcements' || !item.childOf){
                         if (!item.childOf) {
                             addToUi(item)
                         } else {
@@ -624,10 +624,10 @@
                     
                     commentArea.appendChild(inputContainer)
                     
-                    innerDetails.appendChild(arrowContainer)
                     innerDetails.appendChild(commentArea)  
                     
                     details.appendChild(header)
+                    details.appendChild(arrowContainer)
                     details.appendChild(innerDetails)
 
                     itemContainer.appendChild(details)
@@ -1011,10 +1011,10 @@
                     
                     commentArea.appendChild(inputContainer)
                     
-                    innerDetails.appendChild(arrowContainer)
                     innerDetails.appendChild(commentArea)  
                     
                     details.appendChild(header)
+                    details.appendChild(arrowContainer)
                     details.appendChild(innerDetails)
 
                     itemContainer.appendChild(details)

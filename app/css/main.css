@@ -416,6 +416,12 @@ input:focus {
     display: none !important;
 }
 
+#loader {
+    position: absolute;
+    left: 50vw;
+    top: 50vh;
+}
+
 .confirmButton {
     background-color: rgba(0, 0, 204, 0.5);
     height: 35px;

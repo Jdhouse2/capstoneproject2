@@ -84,7 +84,7 @@
                 feedState.items.sort(function(a, b) {
                         return b.voteCount - a.voteCount;
                 }).forEach((item) => {
-                    if(item.postCategory === dept || item.postCategory == 'Announcements' || !item.childOf){
+                    if(item.postCategory === dept || item.postCategory == 'Announcements'){
                         if (!item.childOf) {
                             addToUi(item)
                         } else {
@@ -1024,7 +1024,7 @@
                         let inputRadio = document.createElement('input')
                             inputRadio.id = `${itemObj.postID}-radio-input`
                             inputRadio.classList.add('statusInput')
-                            inputRadio.name = 'statusInput'
+                            inputRadio.name = `statusInput-${itemObj.postID}`
                             inputRadio.type = 'radio'
                             inputRadio.value = option
 
@@ -1070,7 +1070,7 @@
                 // If the user is not a mod, just show status
                 } else {
                     if (itemObj.status) {
-                        progressContainer.innerHTML = `Moderator Status: ${itemObj.status}`
+                        progressContainer.innerHTML = `${itemObj.status}`
                         progressContainer.classList.add('non-mod')
                     }
                 }

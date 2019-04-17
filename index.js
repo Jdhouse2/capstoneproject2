@@ -223,6 +223,16 @@ app.get('/api/postComment', function(req, res) {
     });
 });
 
+app.get('/api/update-status', function(req, res) {
+    let queryObj = req.query
+    console.log(queryObj)
+    let updateParent = `UPDATE posts SET status = '${queryObj.value}' where postID = ${queryObj.id};`;
+    con.query(updateParent, function(err, result2, fields2) {
+        if(err) throw err;
+        res.send({status: 'success'})
+    })            
+});
+
 
 
 app.get('/api/getuserinfo', function (req, res) {

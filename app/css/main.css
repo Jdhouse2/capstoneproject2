@@ -126,12 +126,27 @@
     border-radius: 5px;
     flex: 1 0 100%;
     align-items: center;
-    height: 7vw;
+    min-height: 7vw;
+    height: fit-content;
+    padding: 10px;
     transition: height 1.4s, min-height 1.4s;
     background-color: #F2F3AE;
     margin-bottom: 5px;
     margin-right: 5px;
     font-family: 'Raleway', sans-serif;
+}
+
+.non-mod {
+    padding: 10px;
+    background-color: #4DB7DE;
+}
+
+.radio-container {
+    padding: 10px;
+}
+
+.radio-container label {
+    padding: 5px;
 }
 
 .voted {

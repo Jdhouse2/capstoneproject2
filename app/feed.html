@@ -642,7 +642,7 @@
                         }
                         catch (err) { console.log("Error adding comment.");}
                     }
-                } else{
+                } else {
                     // Grab the feed container
                     let listContainer = document.querySelector('.listContainer')
                     
@@ -997,6 +997,84 @@
                         }
                     })
 
+                // Create progress / mod status area
+                    // Create the containers
+                let progressContainer = document.createElement('div')
+                    progressContainer.classList.add('progressContainer')
+
+                let progressInfo = document.createElement('div')
+                    progressInfo.classList.add('progressInfo')
+                
+                // If the user is a mod, we want to show radio buttons
+                // Otherwise, just show the status
+                if (Number(localStorage.getItem('modDist'))) {
+
+                    // Possible statuses
+                    let options = ['In Progress', 'Need More Information', 'Not Currently Feasible', 'On Hold']
+
+                    // For each status option, create an input area
+                    options.forEach((option) => {
+
+                        // input container
+                        let radioContainer = document.createElement('radioContainer')
+                            radioContainer.id = `${itemObj.postID}-radio-container`
+                            radioContainer.classList.add('radio-container')
+                        
+                        // radio butt
+                        let inputRadio = document.createElement('input')
+                            inputRadio.id = `${itemObj.postID}-radio-input`
+                            inputRadio.classList.add('statusInput')
+                            inputRadio.name = 'statusInput'
+                            inputRadio.type = 'radio'
+                            inputRadio.value = option
+
+                            // if this is the current status, check it
+                            if (itemObj.status === option) {
+                                inputRadio.checked = true
+                            }
+
+                            // on change, update the database
+                            inputRadio.addEventListener('change', (e) => {
+                                let dataObj = {
+                                    value: option,
+                                    id: itemObj.postID,
+                                }
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: '/api/update-status',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    data: dataObj,
+                                    success: function (msg) {
+                                        console.log('updated')
+                                    },
+                                    error: function (e) {
+                                        console.log('failure')
+                                        console.log(e)
+                                    }
+                                })
+                            })
+
+                        let label = document.createElement('label')
+                            label.for = `${itemObj.postID}-radio-input`
+                            label.innerHTML = option
+
+                        // attach the components
+                        radioContainer.appendChild(inputRadio)
+                        radioContainer.appendChild(label)
+
+                        progressInfo.appendChild(radioContainer)
+                    })
+                
+                // If the user is not a mod, just show status
+                } else {
+                    if (itemObj.status) {
+                        progressContainer.innerHTML = `Moderator Status: ${itemObj.status}`
+                        progressContainer.classList.add('non-mod')
+                    }
+                }
+
                 /// Start to attach elements to each other (note that the order is specific)
                     arrowContainer.appendChild(upArrow)
                     arrowContainer.appendChild(downArrow)
@@ -1012,8 +1090,14 @@
                     commentArea.appendChild(inputContainer)
                     
                     innerDetails.appendChild(commentArea)  
+
+                    progressContainer.appendChild(progressInfo)
                     
                     details.appendChild(header)
+                    if (!childOf) {
+                        details.appendChild(progressContainer) 
+                    }
+
                     details.appendChild(arrowContainer)
                     details.appendChild(innerDetails)
 

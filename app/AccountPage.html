@@ -1,95 +1,98 @@
 ﻿<html>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account</title>
     <link rel='stylesheet' href='./css/nav.css' type='text/css'>
     <link rel='stylesheet' href='./css/main.css' type='text/css'>
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Leckerli+One" rel="stylesheet" type="text/css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src='./js/main.js'></script>
 </head>
 <body class="addAnItem">
-	<div id='nav'>
+    <div id='nav'>
 
     </div>
-	<h2>My Account Information</h2>
+    <div id='pageHeading'>
+        <p>My Account</p>
+    </div>
     <h3>My Posts</h3>
-	<table class="postTable" id="myPosts">
-		<tr>
-			<th class="hide">My Posts</th>
-		</tr>
-		<tr>
-			<th>Upvotes</th>
-			<th>Downvotes</th>
-			<th>Category</th>
-			<th>Post</th>
-		</tr>
-	</table>
-    <h3>My Comments</h3>
-	<table class="commentTable" id="myComments">
-	<tr>
-			<th class="hide">My Comments</th>	
-	</tr>
-    <tr>
+    <table class="postTable" id="myPosts">
+        <tr>
+            <th class="hide">My Posts</th>
+        </tr>
+        <tr>
             <th>Upvotes</th>
             <th>Downvotes</th>
-            <th>Comment</th>
-    </tr>
-	</table>
-	<script>
-		function getPosts() {
-                $.ajax({
-                    type: "GET",
-                    url: '/api/get-posts',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (msg) {
-                        console.log(msg);
-                        var table = document.getElementById("myPosts");
-                        var cTable = document.getElementById("myComments");
-                        for (i = 0; i < msg.length; i++) {
-                            var thisOwner = msg[i].originalPosterID;
-                            if (thisOwner == localStorage.getItem("ownerid")) {
-                                var upvotes = msg[i].voteCount;
-                                var downvotes = msg[i].downVoteCount;
-                                var category = msg[i].postCategory;
-                                var	post = msg[i].postContent;
+            <th>Category</th>
+            <th class="postColumn">Post</th>
+        </tr>
+    </table>
+    <h3>My Comments</h3>
+    <table class="commentTable" id="myComments">
+        <tr>
+            <th class="hide">My Comments</th>
+        </tr>
+        <tr>
+            <th>Upvotes</th>
+            <th>Downvotes</th>
+            <th class="postColumn">Comment</th>
+        </tr>
+    </table>
+    <script>
+        function getPosts() {
+            $.ajax({
+                type: "GET",
+                url: '/api/get-posts',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    console.log(msg);
+                    var table = document.getElementById("myPosts");
+                    var cTable = document.getElementById("myComments");
+                    for (i = 0; i < msg.length; i++) {
+                        var thisOwner = msg[i].originalPosterID;
+                        if (thisOwner == localStorage.getItem("ownerid")) {
+                            var upvotes = msg[i].voteCount;
+                            var downvotes = msg[i].downVoteCount;
+                            var category = msg[i].postCategory;
+                            var post = msg[i].postContent;
 
-                                var row = table.insertRow(2);
-                                var upvoteCell = row.insertCell(0);
-                                var downvoteCell = row.insertCell(1);
-                                var categoryCell = row.insertCell(2);
-                                var postCell = row.insertCell(3);
+                            var row = table.insertRow(2);
+                            var upvoteCell = row.insertCell(0);
+                            var downvoteCell = row.insertCell(1);
+                            var categoryCell = row.insertCell(2);
+                            var postCell = row.insertCell(3);
 
-                                if (msg[i].childOf) {
+                            if (msg[i].childOf) {
 
                                 row = cTable.insertRow(2);
                                 upvoteCell = row.insertCell(0);
                                 downvoteCell = row.insertCell(1);
-                                
+
                                 postCell = row.insertCell(2);
 
-                                }
-
-                                // Fill Cells
-                                upvoteCell.innerHTML = upvotes;
-                                downvoteCell.innerHTML = downvotes;
-                                categoryCell.innerHTML = category;
-                                postCell.innerHTML = post;
                             }
+
+                            // Fill Cells
+                            upvoteCell.innerHTML = upvotes;
+                            downvoteCell.innerHTML = downvotes;
+                            categoryCell.innerHTML = category;
+                            postCell.innerHTML = post;
                         }
-                    },
-                    error: function (e) {
-                        console.log('failure')
-                        console.log(e)
                     }
-                });
-            }
+                },
+                error: function (e) {
+                    console.log('failure')
+                    console.log(e)
+                }
+            });
+        }
 
-            init();
-            getPosts();
+        init();
+        getPosts();
 
-	</script>
+    </script>
 </body>
 </html>

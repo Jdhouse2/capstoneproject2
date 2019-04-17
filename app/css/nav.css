@@ -1,14 +1,12 @@
 .navbar {
     text-align: center;
     margin: auto;
-    background-color: #3B7080;
-    color: white;
+    background-color: #F7F5e6;
 }
 
 .navbar a {
-    color: white;
+    color: #1c4587;
     text-decoration: none;
-
 }
 
 .nav-item:hover {

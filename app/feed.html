@@ -1,15 +1,16 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-            <meta charset='UTF-8'>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Community</title>
-            <link rel='stylesheet' href='./css/nav.css' type='text/css'>
-            <link rel='stylesheet' href='./css/main.css' type='text/css'>
-            <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-            <script src='./js/main.js'></script>
-    </head>
+<head>
+    <meta charset='UTF-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community</title>
+    <link rel='stylesheet' href='./css/nav.css' type='text/css'>
+    <link rel='stylesheet' href='./css/main.css' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Leckerli+One" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src='./js/main.js'></script>
+</head>
     <body>
         <div id='nav'>
 
@@ -678,7 +679,7 @@
                     // Create the upvote arrow
                     let upArrow = generateFlexbox()
                         // This is the actual arrow icon
-                        upArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count' id='ua_${itemObj.postID}'>${itemObj.voteCount}</div>`
+                        upArrow.innerHTML = `<img src='./assets/white-up.png' class='v-icon' id='up-v-icon' alt='upvote'/><div class='count' id='ua_${itemObj.postID}'>${itemObj.voteCount}</div>`
                         upArrow.classList.add('up-arrow')
                         upArrow.classList.add('arrow')
 
@@ -766,7 +767,7 @@
                     // Literally the exact smae as the upvote, just for downvoting.
                     // Maybe those functions should have been combined?
                     let downArrow = generateFlexbox()
-                        downArrow.innerHTML = `<img src='./assets/vote-icon.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count' id='da_${itemObj.postID}'>${itemObj.downVoteCount}</div>`
+                        downArrow.innerHTML = `<img src='./assets/white-up.png' class='v-icon' id='down-v-icon' alt='downvote'/><div class='count' id='da_${itemObj.postID}'>${itemObj.downVoteCount}</div>`
                         downArrow.classList.add('down-arrow')
                         downArrow.classList.add('arrow')
 

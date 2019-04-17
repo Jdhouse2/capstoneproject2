@@ -1,6 +1,6 @@
 #homeContainer {
     width: 75vw;
-    background-image: url('../assets/team.jpg');
+    background-image: url('../assets/team.jpg') !important;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -9,6 +9,7 @@
 }
 
 #home-right-column {
+    padding: 15px;
     background-color: rgba(93,183,222,0.7);
     border-radius: 10px;
     width: 70vw;
@@ -32,13 +33,15 @@
 
 #home-heading {
     border-bottom: 1px solid #5DB7DE;
+    font-family: "Leckerli One"
     text-align: center;
     padding-bottom: 20px;
     color: black;
 }
-#home-heading .heading{
+
+ #home-heading .heading {
+    font-family: "Leckerli One";
     color:black;
-    text-shadow: 2px 2px 3px #FFFFFF;
 }
 
 #home-subtitle {

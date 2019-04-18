@@ -2,7 +2,10 @@
     text-align: center;
     margin: auto;
     background-color: #F7F5e6;
+    width: 100%;
+    margin: auto;
 }
+
 
 .navbar a {
     color: #1c4587;

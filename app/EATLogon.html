@@ -20,18 +20,20 @@
     <div id='nav'></div>
     <div id='login-body'>
 
-        <h2>Community</h2>
-        <div class="container">
-          <label for="uname"><b>Username: </b></label>
-          <input type="text" placeholder="Enter Username" name="username" id='usernameValue'><br><br>
-
-          <label for="psw"><b>Password: </b></label>
-          <input type="password" placeholder="Enter Password" name="password" id='passwordValue'><br><br>
-
-          <button type="submit"onClick="validateUser(this.Form)" id="loginButton">Login</button><br><br>
-          <button onClick="resetPassword()">Forgot Password</button><br><br>
+        <div id='pageHeading'>
+            <p id='pageTitle'>Community</p>
         </div>
-      </div>
+        <div class="container">
+            <label for="uname"><b>Username: </b></label>
+            <input type="text" placeholder="Enter Username" name="username" id='usernameValue'><br><br>
+
+            <label for="psw"><b>Password: </b></label>
+            <input type="password" placeholder="Enter Password" name="password" id='passwordValue'><br><br>
+
+            <button type="submit" onClick="validateUser(this.Form)" id="loginButton">Login</button><br><br>
+            <button onClick="resetPassword()">Forgot Password</button><br><br>
+        </div>
+    </div>
       
 
     <script>

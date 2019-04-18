@@ -16,7 +16,7 @@
 
         </div>
         <div id='pageHeading'>
-            <p id='pageTitle'>Community Feed</p>
+            <p id='pageTitle'>Notice Board</p>
         </div>
         <div class='feedContainer flex flex-row'>
             <!-- Any side nav item can attach to this div -->
@@ -181,7 +181,7 @@
                             clearItems()
                             renderUICategory(urlParams.get('tag'))
                             // Try to change document title
-                            document.getElementById('pageTitle').innerHTML = "Community Feed - " + urlParams.get('tag')
+                            document.getElementById('pageTitle').innerHTML = urlParams.get('tag') + " Notice Board";
 
                             return;
                         }

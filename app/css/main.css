@@ -619,7 +619,8 @@ input:focus {
 
 .container {
     margin: auto;
-    margin-top: 15vh;
+    border-radius: 10px;
+    margin-top: 10vh;
     height: 40vh;
     width: 25vw;
     padding: 20px;

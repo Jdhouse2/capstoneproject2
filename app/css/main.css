@@ -243,6 +243,15 @@
     transition: .7s;
 }
 
+.announcement-commentSection {
+    width: 250px !important;
+    padding: 35px 14px !important;
+}
+
+.announcement-postComment {
+    margin: 10px 0 !important;
+}
+
 .item-inner-details {
     flex-direction: column !important;
 }

@@ -453,6 +453,7 @@
                     // Create the container for comments
                     let inputContainer = document.createElement('div')
                         inputContainer.classList.add('postComment')
+                        inputContainer.classList.add('announcement-postComment')
                         inputContainer.id = `${itemObj.postID}-post-container`
                     
                     // Create the input / text area
@@ -511,6 +512,7 @@
                     // Create element where comments appear
                     let commentArea = document.createElement('div');
                         commentArea.classList.add('commentSection');
+                        commentArea.classList.add('announcement-commentSection')
                         commentArea.id = `${itemObj.postID}-comment-section`
 
                     // Creates the button to remove posts
